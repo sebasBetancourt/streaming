@@ -7,7 +7,7 @@ const popularOnNetflix = [
   {
     id: "p1",
     title: "Squid Game",
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=225&fit=crop&auto=format",
+    image: "https://images.ctfassets.net/4cd45et68cgf/3OEiaCckqRoVc8dJC8eQnu/652eab7b609699c28159363aadacf02c/krak_PreReg-sdp_na_01_en.jpg",
     year: "2021",
     rating: "8.0",
     duration: "1 Season",
@@ -16,7 +16,7 @@ const popularOnNetflix = [
   {
     id: "p2",
     title: "Kingdom",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=225&fit=crop&auto=format",
+    image: "https://elnahualerrante.com/wp-content/uploads/2024/10/kingdom-netflix-review-1.jpg",
     year: "2019",
     rating: "8.3",
     duration: "2 Seasons",
@@ -25,7 +25,7 @@ const popularOnNetflix = [
   {
     id: "p3",
     title: "Crash Landing on You",
-    image: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&h=225&fit=crop&auto=format",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRL9_0eoaPi2bOxf5eu8vtfBomgBt9DVYy1xA&s",
     year: "2019",
     rating: "8.7",
     duration: "1 Season",
@@ -34,7 +34,7 @@ const popularOnNetflix = [
   {
     id: "p4",
     title: "Vincenzo",
-    image: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=225&fit=crop&auto=format",
+    image: "https://pymstatic.com/21157/conversions/peliculas-de-suspense-social.jpg",
     year: "2021",
     rating: "8.4",
     duration: "1 Season",
@@ -43,7 +43,7 @@ const popularOnNetflix = [
   {
     id: "p5",
     title: "Goblin",
-    image: "https://images.unsplash.com/photo-1520637836862-4d197d17c559?w=400&h=225&fit=crop&auto=format",
+    image: "https://cdn.computerhoy.com/sites/navi.axelspringer.es/public/media/image/2019/04/mad-max-furia-carretera.jpg?tf=3840x",
     year: "2016",
     rating: "8.6",
     duration: "1 Season",
@@ -52,7 +52,7 @@ const popularOnNetflix = [
   {
     id: "p6",
     title: "The Glory",
-    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=225&fit=crop&auto=format",
+    image: "https://media.revistagq.com/photos/5ca5f1b3f46488687cf49211/16:9/w_1280,c_limit/peliculas_mas_taquilleras_5260.jpg",
     year: "2022",
     rating: "8.1",
     duration: "1 Season",
@@ -350,13 +350,13 @@ export default function Home() {
       <HeroSection />
       
       <div className="relative z-10 -mt-32 pb-20">
-        <ContentRow title="Explore" items={popularOnNetflix} />
+        <ContentRow id="Explore" title="Explore" items={popularOnNetflix} />
         {/* Ranking Page */}
-        <ContentRow title="Popular on Netflix" items={popularOnNetflix} />
-        <ContentRow title="Trending Now" items={trendingNow} />
-        <ContentRow title="Top 10 in Korea Today" items={topTenKorea} showRank />
-        <ContentRow title="K-Drama Romance" items={romanticDramas} />
-        <ContentRow title="Thriller & Crime" items={thrillerAction} />
+        <ContentRow id="Ranking" title="Trending Now" items={trendingNow} />
+        <ContentRow id="Popular" title="Popular on PelisFlix" items={popularOnNetflix} />
+        <ContentRow title="Ranking Movies" items={topTenKorea} showRank />
+        <ContentRow title="Ranking Series" items={romanticDramas} />
+        <ContentRow title="Ranking Anime" items={thrillerAction} />
       </div>
       
       <Footer />

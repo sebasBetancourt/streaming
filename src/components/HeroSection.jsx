@@ -1,9 +1,22 @@
 import { Play, Info, Volume2, VolumeX } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export function HeroSection() {
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false)
+  const audioRef = useRef(null)
+
+  const toggleMute = () => {
+    if (audioRef.current) {
+      if (isMuted) {
+        audioRef.current.muted = false
+        audioRef.current.play()
+      } else {
+        audioRef.current.muted = true
+      }
+    }
+    setIsMuted(!isMuted)
+  }
 
   return (
     <div className="relative h-screen w-full overflow-hidden">
@@ -18,11 +31,20 @@ export function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
       </div>
+      {/* Audio hidden */}
+      <audio 
+        ref={audioRef} 
+        src="/sounds/dexter-theme.mp3" 
+        autoPlay 
+        loop 
+        muted={isMuted} 
+      />
+
 
       {/* Mute/Unmute Button */}
-      <button 
+      <button
+        onClick={toggleMute}
         className="absolute top-24 right-8 md:top-32 md:right-16 z-20 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors border border-gray-600"
-        onClick={() => setIsMuted(!isMuted)}
       >
         {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
       </button>
