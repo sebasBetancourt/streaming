@@ -10,8 +10,8 @@ export function HeroSection() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&auto=format"
-          alt="Kingdom Background"
+          src="https://media.gq.com.mx/photos/5f87b31742587331b04fdcc3/16:9/w_2560%2Cc_limit/Postr%2520dexter.jpg"
+          alt="Dexter Background"
           className="w-full h-full object-cover"
         />
         {/* Gradient overlays */}
@@ -42,18 +42,19 @@ export function HeroSection() {
         {/* Title */}
         <div className="mb-6">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 leading-tight tracking-wide">
-            KINGDOM
+            Dexter
           </h1>
           
           {/* Badge */}
           <div className="mb-4">
             <div className="inline-flex items-center bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">
-              #1 in TV Shows Today
+              #1 in TV Shows Rankings
             </div>
           </div>
 
           <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl leading-relaxed">
-            Determined to protect a young patient who escaped a mysterious cult, a psychiatrist takes the girl in, putting her own family — and life — in danger.
+          Dexter Morgan un experto en salpicaduras de sangre que reside en Miami, no resuelve solamente casos de asesinato sino que también los comete. 
+          Es una forma de justicia única en la cual el encantador Dexter se siente ávido de llevarla a cabo.
           </p>
         </div>
 
