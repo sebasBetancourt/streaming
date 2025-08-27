@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play, Plus, Check, Heart, X } from "lucide-react";
+import { Play, Plus, Check, Heart, X, Star, Users } from "lucide-react";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import { useBodyScrollLock } from "../hooks/useScrollLock";
 
@@ -16,6 +16,45 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
       "Muy buena calidad 10/10  "
      ]
   }
+
+  
+  const [starRating, setStarRating] = useState(0);
+
+  const StarRating = ({ starRating, setStarRating }) => {
+    return (
+      <div className="flex space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            className={`w-5 h-5 cursor-pointer transition-colors ${
+              starRating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-400"
+            }`}
+            onClick={() => setStarRating(star)}
+            onMouseEnter={(e) => e.currentTarget.classList.add("text-yellow-300")}
+            onMouseLeave={(e) => e.currentTarget.classList.remove("text-yellow-300")}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const [comments, setComments] = useState([]);
+  const [username, setUsername] = useState("");
+  const [comment, setComment] = useState("");
+
+  const handleAddComment = () => {
+    if (username.trim() && comment.trim() && starRating > 0) {
+      setComments([
+        ...comments,
+        { id: Date.now(), username, comment, starRating },
+      ]);
+      setUsername("");
+      setComment("");
+      setStarRating(0); // reset después de enviar
+    }
+  };
+
+
 
 
   // hooks estables
@@ -124,8 +163,16 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Columna principal */}
             <div className="md:col-span-2">
-              <div>
-                <h3 className="mb-2 text-sm font-semibold opacity-90">User</h3>
+              <div className="flex">
+                <h3 className="mb-2 text-sm font-semibold opacity-90 mr-2">Usuario/Creador:</h3>
+                <span className="text-sm opacity-70">{usuarioData.nombre}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <h3 className="mb-2 text-sm font-semibold opacity-90 mr-2">Calificación:</h3>
+
+                <div className="p-4">
+                  <StarRating starRating={starRating} setStarRating={setStarRating} />
+                </div>
               </div>
               <h4 className="mb-2 text-sm font-semibold opacity-90">Descripción</h4>
               <p className="text-sm opacity-80">
@@ -139,7 +186,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                 </div>
                 <div className="rounded-lg border border-white/10 bg-white/[0.05] p-3">
                   <div className="text-xs opacity-70">Ranking ponderado</div>
-                  <div className="mt-1 text-lg font-semibold">—</div>
+                  <div className="mt-1 text-lg font-semibold">{usuarioData.ranking}</div>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-white/[0.05] p-3">
                   <div className="text-xs opacity-70">Likes / Dislikes</div>
@@ -204,6 +251,64 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                 </div>
               )}
             </div>
+
+            
+            <div className="w-200 pr-4 bg-neutral-900 text-white">
+              <div className="flex mb-3 items-center space-x-2">
+                <h3 className="text-lg font-semibold">Comentarios</h3>
+                <Users className="mr-8 h-5 w-5"></Users>
+                <StarRating starRating={starRating} setStarRating={setStarRating} />
+              </div>
+              
+
+              <div className="flex flex-col">
+                <input
+                  type="text"
+                  placeholder="Escribe tu nombre"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-80 mt-4 mb-4 p-2 rounded bg-neutral-800 border border-neutral-700"
+                />
+
+                <textarea
+                  placeholder="Escribe tu comentario..."
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  className="w-80 mb-1 p-2 rounded bg-neutral-800 border border-neutral-700"
+                />
+
+
+
+                <button
+                  onClick={handleAddComment}
+                  className="w-80 mt-3 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white"
+                >
+                  Enviar
+                </button>
+              </div>
+
+              {/* Mostrar comentarios */}
+              <div className="flex flex-wrap w-full mt-2 space-x-4">
+                {comments.map((c) => (
+                  <div key={c.id} className="p-3 bg-neutral-800 rounded-lg border border-neutral-700 mt-5">
+                    <h4 className="font-semibold">{c.username}</h4>
+                    <div className="flex">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-4 h-4 ${
+                            c.starRating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-500"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-2 text-sm opacity-80">{c.comment}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+
           </div>
         </div>
       </div>
