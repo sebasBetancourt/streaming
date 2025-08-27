@@ -19,7 +19,9 @@ export function HeroSection() {
   }
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden"
+      style={{ minHeight: "calc(100vh - 64px)", paddingTop: "84px" }}
+    >
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -57,7 +59,7 @@ export function HeroSection() {
             <div className="bg-red-600 text-white w-8 h-8 flex items-center justify-center font-bold text-lg">
               P
             </div>
-            <span className="text-white/80 font-medium tracking-widest uppercase text-sm">Series</span>
+            <span className="text-white/80 font-medium tracking-widest uppercase text-sm">Streaming</span>
           </div>
         </div>
 
@@ -70,7 +72,7 @@ export function HeroSection() {
           {/* Badge */}
           <div className="mb-4">
             <div className="inline-flex items-center bg-red-600 text-white px-3 py-1 rounded text-sm font-bold">
-              #1 in TV Shows Rankings
+              #1 en Clasificacion de Series
             </div>
           </div>
 
@@ -87,7 +89,7 @@ export function HeroSection() {
             className="bg-white text-black hover:bg-gray-200 flex items-center gap-3 px-8 py-4 text-lg font-semibold transition-all duration-200 hover:scale-105 rounded-md"
           >
             <Play className="w-6 h-6 fill-current" />
-            Play
+            Ver
           </Button>
           
           <Button 
@@ -96,13 +98,14 @@ export function HeroSection() {
             className="bg-gray-600/70 text-white hover:bg-gray-600 flex items-center gap-3 px-8 py-4 text-lg font-semibold transition-all duration-200 hover:scale-105 rounded-md border border-gray-500"
           >
             <Info className="w-6 h-6" />
-            More Info
+            Mas Informacion
           </Button>
         </div>
       </div>
 
       {/* Bottom fade for smooth transition to content */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
+      <div className="mb-68"></div>
     </div>
   );
 }

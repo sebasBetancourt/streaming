@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Footer } from "../components/Footer";
@@ -7,97 +7,354 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [showRegister, setShowRegister] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+  // --- Register UI/logic ---
+  const [registerData, setRegisterData] = useState({
+    email: "",
+    telefono: "",
+    pais: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [regError, setRegError] = useState("");
+  const [showPw, setShowPw] = useState(false);
+  const [showPw2, setShowPw2] = useState(false);
+  const [closing, setClosing] = useState(false); // para animación de salida
+
+  const openRegister = () => {
+    setRegError("");
+    setShowRegister(true);
+    setClosing(false);
   };
+  const closeRegister = () => {
+    setClosing(true);
+    setTimeout(() => {
+      setShowRegister(false);
+      setClosing(false);
+    }, 220); // debe coincidir con animation duration
+  };
+
+  // ESC para cerrar modal
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape" && showRegister) closeRegister();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showRegister]);
+
+  const modalRef = useRef(null);
+  useEffect(() => {
+    const onClick = (e) => {
+      if (showRegister && modalRef.current && !modalRef.current.contains(e.target)) {
+        closeRegister();
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [showRegister]);
+
+  // --- Login ---
+  const handleChange = (e) =>
+    setFormData((s) => ({ ...s, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      // 🔹 Aquí deberías llamar a tu API real (fetch/axios)
-      // Ejemplo ficticio simulando login
       if (formData.email === "admin@geek.com" && formData.password === "1234") {
         login({ email: formData.email, role: "admin" });
         navigate("/admin");
-      } else if (
-        formData.email === "user@geek.com" &&
-        formData.password === "1234"
-      ) {
+      } else if (formData.email === "user@geek.com" && formData.password === "1234") {
         login({ email: formData.email, role: "user" });
         navigate("/home");
       } else {
         setError("Credenciales incorrectas");
       }
-    } catch (err) {
+    } catch {
       setError("Error al iniciar sesión");
     }
   };
-return (
-  <div className="bg-black text-white">
-    {/* Contenedor del formulario con fondo personalizado */}
-    <div
-      className="h-screen flex items-center justify-center"
-      style={{
-        backgroundImage: `url('https://assets.nflxext.com/ffe/siteui/vlv3/3e4bd046-85a3-40e1-842d-fa11cec84349/web/CO-es-20250818-TRIFECTA-perspective_783420e1-1a07-4c2a-9f3c-585857c3ec6c_large.jpg')`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <form
-        onSubmit={handleSubmit}
-        className="bg-gray-800/90 p-8 rounded-lg shadow-lg w-96"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
 
-        {error && <p className="text-red-400 mb-4">{error}</p>}
+  // --- Register ---
+  const handleRegisterChange = (e) =>
+    setRegisterData((s) => ({ ...s, [e.target.name]: e.target.value }));
 
-        <div className="mb-4">
-          <label className="block mb-1">Correo</label>
-          <input
-            type="email"
-            name="email"
-            onChange={handleChange}
-            value={formData.email}
-            required
-            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:ring focus:ring-indigo-400"
-          />
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    setRegError("");
+    if (registerData.password !== registerData.confirmPassword) {
+      setRegError("Las contraseñas no coinciden.");
+      return;
+    }
+    // TODO: lógica real de registro
+    closeRegister();
+    setRegisterData({ email: "", telefono: "", pais: "", password: "", confirmPassword: "" });
+  };
+
+  return (
+    <div id="Footer" className="bg-black text-white min-h-screen flex flex-col">
+      <div className="relative flex-1">
+        {/* Fondo */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "url('https://assets.nflxext.com/ffe/siteui/vlv3/3e4bd046-85a3-40e1-842d-fa11cec84349/web/CO-es-20250818-TRIFECTA-perspective_783420e1-1a07-4c2a-9f3c-585857c3ec6c_large.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            zIndex: 0,
+          }}
+        />
+        {/* Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 z-10"></div>
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black to-transparent z-10"></div>
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black to-transparent z-10"></div>
+
+        {/* Logo */}
+        <div className="absolute top-0 left-0 w-full flex justify-start z-20">
+          <a
+            href="#"
+            className="font-bold text-3xl md:text-5xl tracking-tight m-6 drop-shadow-lg"
+            style={{ color: "#e50914", textShadow: "0 2px 8px rgba(0,0,0,0.7)" }}
+          >
+            PixelFlix
+          </a>
         </div>
 
-        <div className="mb-4">
-          <label className="block mb-1">Contraseña</label>
-          <input
-            type="password"
-            name="password"
-            onChange={handleChange}
-            value={formData.password}
-            required
-            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:ring focus:ring-indigo-400"
-          />
-        </div>
+        {/* Formulario login */}
+        <div className="relative z-20 flex items-center justify-center min-h-screen">
+          <form
+            onSubmit={handleSubmit}
+            className="w-[22rem] md:w-[24rem] rounded-2xl border border-white/10 bg-black/60 p-8 md:p-10 shadow-2xl backdrop-blur-md"
+          >
+            <h2 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
 
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 hover:bg-indigo-500 transition-colors py-2 rounded font-semibold"
+            {error && (
+              <div className="mb-4 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-300">
+                {error}
+              </div>
+            )}
+
+            <div className="mb-4">
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Email"
+                autoComplete="email"
+                onChange={handleChange}
+                value={formData.email}
+                required
+                className="w-full h-12 rounded-md border border-white/20 bg-white/10 px-4 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+              />
+            </div>
+
+            <div className="mb-2">
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Contraseña"
+                autoComplete="current-password"
+                onChange={handleChange}
+                value={formData.password}
+                required
+                className="w-full h-12 rounded-md border border-white/20 bg-white/10 px-4 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+              />
+            </div>
+
+            <div className="mb-4 flex items-center justify-between text-sm opacity-80">
+              <label className="flex items-center gap-2">
+                <input id="remember" type="checkbox" className="h-4 w-4" />
+                <span>Recuérdame</span>
+              </label>
+              <div className="hover:underline cursor-pointer">¿Necesitas ayuda?</div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full h-12 rounded-md bg-[#e50914] font-semibold transition hover:bg-[#f6121d] hover:shadow-[0_8px_24px_rgba(229,9,20,0.35)]"
+            >
+              Iniciar Sesión
+            </button>
+
+            {/* Separador */}
+            <div className="my-5 flex items-center gap-3">
+              <div className="h-px flex-1 bg-white/15"></div>
+              <div className="text-sm opacity-70">O</div>
+              <div className="h-px flex-1 bg-white/15"></div>
+            </div>
+
+            <button
+              type="button"
+              className="w-full h-12 rounded-md border border-white/15 bg-white/[0.06] font-semibold transition hover:bg-white/[0.1]"
+              onClick={openRegister}
+            >
+              Regístrate
+            </button>
+
+            <div className="mt-6 text-xs opacity-70 leading-relaxed">
+              Autenticación basada en tokens (JWT) con expiración y rotación automática.
+            </div>
+          </form>
+
+          {/* Scrim inferior */}
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
+        </div>
+      </div>
+
+      {/* Modal de registro (animado) */}
+      {showRegister && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          aria-modal="true"
+          role="dialog"
         >
-          Entrar
-        </button>
-      </form>
+          {/* Overlay */}
+          <div
+            className="absolute inset-0 bg-black/70"
+            style={{ animation: `${closing ? "overlayOut" : "overlayIn"} 220ms ease both` }}
+            onClick={closeRegister}
+            aria-hidden="true"
+          ></div>
+
+          {/* Sheet */}
+          <div
+            ref={modalRef}
+            className="relative w-[22rem] md:w-[30rem] rounded-2xl border border-white/10 bg-zinc-900/95 shadow-2xl backdrop-blur-md"
+            style={{ animation: `${closing ? "modalOut" : "modalIn"} 220ms ease both` }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+              <div className="font-semibold">Crear cuenta</div>
+              <button
+                type="button"
+                className="h-9 w-9 rounded-full border border-white/20 text-xl leading-none opacity-80 transition hover:opacity-100"
+                onClick={closeRegister}
+                aria-label="Cerrar"
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Body */}
+            <form onSubmit={handleRegisterSubmit} className="px-6 py-5">
+              {/* Tip/Tagline */}
+              <div className="mb-4 text-sm opacity-80">
+                Disfruta series, películas y mucho mas.
+              </div>
+
+              {regError && (
+                <div className="mb-4 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-300">
+                  {regError}
+                </div>
+              )}
+
+              {/* Grid responsive, diseño más limpio */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="md:col-span-2">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    value={registerData.email}
+                    onChange={handleRegisterChange}
+                    required
+                    className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="tel"
+                    name="telefono"
+                    placeholder="Teléfono"
+                    value={registerData.telefono}
+                    onChange={handleRegisterChange}
+                    required
+                    className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    name="pais"
+                    placeholder="País"
+                    value={registerData.pais}
+                    onChange={handleRegisterChange}
+                    required
+                    className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+                  />
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPw ? "text" : "password"}
+                    name="password"
+                    placeholder="Contraseña"
+                    value={registerData.password}
+                    onChange={handleRegisterChange}
+                    required
+                    className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md border border-white/15 px-2 py-1 text-xs opacity-80 transition hover:opacity-100"
+                  >
+                    {showPw ? "Ocultar" : "Ver"}
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showPw2 ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Confirmar contraseña"
+                    value={registerData.confirmPassword}
+                    onChange={handleRegisterChange}
+                    required
+                    className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 pr-12 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPw2((v) => !v)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md border border-white/15 px-2 py-1 text-xs opacity-80 transition hover:opacity-100"
+                  >
+                    {showPw2 ? "Ocultar" : "Ver"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Footer del modal */}
+              <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="text-xs opacity-70">
+                  Al registrarte aceptas nuestros <span className="underline">Términos</span> y{" "}
+                  <span className="underline">Privacidad</span>.
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={closeRegister}
+                    className="h-11 rounded-md border border-white/20 bg-white/5 px-4 transition hover:bg-white/10"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="h-11 rounded-md bg-[#e50914] px-5 font-semibold transition hover:bg-[#f6121d] hover:shadow-[0_8px_24px_rgba(229,9,20,0.35)]"
+                  >
+                    Registrarse
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <Footer className="bg-black" />
     </div>
-
-    {/* Footer con fondo negro */}
-    <Footer className="bg-black" />
-  </div>
-);
-
+  );
 }

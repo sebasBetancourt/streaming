@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import Login from "../pages/Login";
 import Home from "../pages/Home";
 import Admin from "../pages/Admin";
+import CategoriesPage from "../pages/Categories";
 
 const PrivateRoute = ({ children, role }) => {
   const { user } = useAuth();
@@ -45,6 +46,11 @@ export default function AppRouter() {
               <Home />
             </PrivateRoute>
           }
+        />
+
+        <Route 
+        path="/categories" 
+        element={<CategoriesPage />} 
         />
 
         {/* Admin */}

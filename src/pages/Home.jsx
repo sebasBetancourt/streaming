@@ -350,13 +350,13 @@ export default function Home() {
       <HeroSection />
       
       <div className="relative z-10 -mt-32 pb-20">
-        <ContentRow id="Explore" title="Explore" items={popularOnNetflix} />
+        <ContentRow id="Explore" title="Explorar" items={popularOnNetflix} />
         {/* Ranking Page */}
-        <ContentRow id="Ranking" title="Trending Now" items={trendingNow} />
-        <ContentRow id="Popular" title="Popular on PelisFlix" items={popularOnNetflix} />
-        <ContentRow title="Ranking Movies" items={topTenKorea} showRank />
-        <ContentRow title="Ranking Series" items={romanticDramas} />
-        <ContentRow title="Ranking Anime" items={thrillerAction} />
+        <ContentRow id="Ranking" title="Tendencia Ahora" items={trendingNow} />
+        <ContentRow id="Popular" title="Popular en PelisFlix" items={popularOnNetflix} />
+        <ContentRow title="Clasificacion Peliculas" items={topTenKorea} showRank />
+        <ContentRow title="Clasificacion Series" items={romanticDramas} />
+        <ContentRow title="Clasificacion Anime" items={thrillerAction} />
       </div>
       
       <Footer />

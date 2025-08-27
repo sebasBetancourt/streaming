@@ -15,45 +15,45 @@ export function Footer() {
         {/* Footer Links */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
           <div className="space-y-3">
-            <a href="#" className="block hover:text-white transition-colors text-sm">Audio Description</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Help Center</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Gift Cards</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Media Center</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Descripción de audio</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Centro de ayuda</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Tarjetas de regalo</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Centro de prensa</a>
           </div>
           <div className="space-y-3">
-            <a href="#" className="block hover:text-white transition-colors text-sm">Investor Relations</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Jobs</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Terms of Use</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Privacy</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Relaciones con inversionistas</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Empleos</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Términos de uso</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Privacidad</a>
           </div>
           <div className="space-y-3">
-            <a href="#" className="block hover:text-white transition-colors text-sm">Legal Notices</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Cookie Preferences</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Corporate Information</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Contact Us</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Avisos legales</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Preferencias de cookies</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Información corporativa</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Contáctanos</a>
           </div>
           <div className="space-y-3">
-            <a href="#" className="block hover:text-white transition-colors text-sm">Speed Test</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Only on Netflix</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">Originals</a>
-            <a href="#" className="block hover:text-white transition-colors text-sm">K-Content Hub</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Prueba de velocidad</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Solo en PixelFlix</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Originales</a>
+            <a href="#" className="block hover:text-white transition-colors text-sm">Centro K-Content</a>
           </div>
         </div>
 
         {/* Service Code Button */}
         <div className="mb-6">
           <button className="border border-gray-600 text-gray-400 px-4 py-2 text-sm hover:border-white hover:text-white transition-colors">
-            Service Code
+            Código de servicio
           </button>
         </div>
 
         {/* Copyright */}
         <div className="text-sm text-gray-500 space-y-2">
           <p>© 2025 PixelFlix, Inc.</p>
-          <p>PixelFlix Colombia - Watch TV Shows Online, Watch Movies Online</p>
+          <p>PixelFlix Colombia - Mira series y películas online</p>
           <p>
-            Experience the best of Korean entertainment with our extensive collection of K-dramas, 
-            from heart-fluttering romances to edge-of-your-seat thrillers. Discover your next favorite series today.
+            Disfruta lo mejor del entretenimiento con nuestra amplia colección.
+            Descubre tu próxima serie favorita hoy.
           </p>
         </div>
       </div>

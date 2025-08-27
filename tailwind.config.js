@@ -70,6 +70,7 @@ export default {
       },
       fontFamily: {
         sans: ['Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        ubuntu: ['Ubuntu', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif']
       },
       keyframes: {
         "accordion-down": {
