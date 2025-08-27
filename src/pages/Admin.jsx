@@ -382,13 +382,15 @@ export default function AdminPage() {
 
   // ====================== UI ======================
   return (
-    <div className="min-h-screen netflix-container">
+    <div className="min-h-screen netflix-container pt-4">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
         <div className="flex items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <a href="/admin" className="text-xl font-semibold" style={{ color: "#e50914" }}>PixelFlix</a>
-            <div className="text-sm opacity-80">Admin</div>
+            <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
+              PixelFlix
+            </a>
+            <a href="/admin" className="text-sm opacity-80 hover:text-gray-300">Admin</a>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -405,8 +407,9 @@ export default function AdminPage() {
               className="rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm opacity-90 transition hover:bg-white/10"
               title="Salir"
             >
+
               <div className="flex items-center gap-2">
-                <a href="/login">Salir</a>
+                <a href="/login"><X className="h-4 w-4"></X></a>
               </div>
             </button>
           </div>
