@@ -6,6 +6,7 @@ import Admin from "../pages/Admin";
 import CategoriesPage from "../pages/Categories";
 import FavoritesPage from "../pages/Favorites";
 import MyListPage from "../pages/List";
+import ProfilePage from "../pages/Profile";
 
 const PrivateRoute = ({ children, role }) => {
   const { user } = useAuth();
@@ -61,6 +62,10 @@ export default function AppRouter() {
         <Route 
         path="/list" 
         element={<MyListPage />} 
+        />
+        <Route 
+        path="/profile" 
+        element={<ProfilePage />} 
         />
 
         {/* Admin */}
