@@ -3,17 +3,16 @@ import { ScrollArea } from "./ui/scroll-area";
 
 export function ContentRow({ id, title, items, showRank = false }) {
   return (
-    <div id={id}  className="mb-8 scroll-mt-24">
-      <h2 className="text-white text-xl md:text-2xl font-semibold mb-4 px-4 md:px-12">
-        {title}
-      </h2>
-      
+    <div id={id} className="mb-8 scroll-mt-24">
+      <h2 className="px-4 text-xl font-semibold text-white md:px-12 md:text-2xl">{title}</h2>
+
       <div className="px-4 md:px-12">
         <ScrollArea className="w-full">
-          <div className="flex space-x-4 pb-4 overflow-visible">
+          <div className="flex space-x-4 pb-4">
             {items.map((item) => (
-              <div key={item.id} className="flex-none w-72 md:w-80 px-1">
+              <div key={item.id} className="w-72 flex-none px-1 md:w-80">
                 <ContentCard
+                  id={item.id}
                   title={item.title}
                   image={item.image}
                   year={item.year}
@@ -21,6 +20,8 @@ export function ContentRow({ id, title, items, showRank = false }) {
                   duration={item.duration}
                   rank={showRank ? item.rank : undefined}
                   description={item.description}
+                  type={item.type}          // opcional si lo tienes
+                  genres={item.genres}      // opcional si lo tienes
                 />
               </div>
             ))}

@@ -248,9 +248,6 @@ function CategorySection({ type, title }) {
     <div className="mb-10">
       <div className="mb-3 flex items-center justify-between px-4 md:px-12">
         <h1 className="text-2xl font-semibold">{title}</h1>
-        <div className="text-xs opacity-70">
-          Fuente: {type === "anime" ? "Jikan" : TMDB_KEY ? "TMDb" : type === "movie" ? "YTS" : "TVMaze"}
-        </div>
       </div>
 
       <GenreChips options={genreOptions} value={genre} onChange={setGenre} />
