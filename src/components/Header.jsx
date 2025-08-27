@@ -87,8 +87,18 @@ export function Header() {
                   </div>
                 </div>
               </div>
-              <a href="#" className="text-gray-300 hover:text-gray-400 transition-colors text-lg">Favoritos</a>
-              <a href="#" className="text-gray-300 hover:text-gray-400 transition-colors text-lg">Mi Lista</a>
+              <button
+                onClick={() => navigate("/favorites")}
+                className="text-gray-300 hover:text-gray-400 transition-colors text-lg bg-transparent border-none outline-none cursor-pointer"
+              >
+                Favoritos
+              </button>
+              <button
+                onClick={() => navigate("/list")}
+                className="text-gray-300 hover:text-gray-400 transition-colors text-lg bg-transparent border-none outline-none cursor-pointer"
+              >
+                Mi Lista
+              </button>
             </nav>
             {/* Mobile Menu Button */}
             <button 
@@ -209,18 +219,24 @@ export function Header() {
                   </div>
                 </div>
               )}
-              <a
-                href="#"
-                className="text-gray-300 hover:text-gray-400 transition-colors"
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  navigate("/favorites");
+                }}
+                className="text-gray-300 hover:text-gray-400 transition-colors text-left"
               >
                 Favoritos
-              </a>
-              <a
-                href="#"
-                className="text-gray-300 hover:text-gray-400 transition-colors"
+              </button>
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  navigate("/list");
+                }}
+                className="text-gray-300 hover:text-gray-400 transition-colors text-left"
               >
                 Mi Lista
-              </a>
+              </button>
             </nav>
           </div>
         )}

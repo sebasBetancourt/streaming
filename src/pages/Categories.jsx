@@ -266,9 +266,9 @@ export default function CategoriesPage() {
       {/* Header simple */}
       <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
         <div className="flex items-center gap-6">
-          <div className="text-xl font-semibold" style={{ color: "#e50914" }}>
+          <a href="/home" className="text-xl font-semibold" style={{ color: "#e50914" }}>
             PixelFlix
-          </div>
+          </a>
           <div className="text-sm opacity-80">Categorías</div>
         </div>
       </div>

@@ -1,30 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Heart, Check, Plus, X, Filter, SortAsc } from "lucide-react";
-// Si usas un AuthContext propio, descomenta y úsalo:
-// import { useAuth } from "../context/AuthContext";
+import { Heart, Filter, SortAsc, Search as SearchIcon, Info } from "lucide-react";
+import NetflixSearch from "../components/Search"; 
 
-/**
- * FAVORITES PAGE
- * - Lista los favoritos del usuario (películas/series/anime)
- * - Filtros por tipo y género
- * - Orden por ranking/popularidad/fecha
- * - Quitar de favoritos
- *
- * BACKEND ESPERADO (ajusta según tu implementación):
- *   GET    /api/v1/favorites?type=movie|tv|anime&genre=Acción&sort=ranking&limit=24&offset=0
- *   POST   /api/v1/favorites           { itemId, type }
- *   DELETE /api/v1/favorites/:favoriteId   (o /api/v1/favorites?itemId=xxx)
- *
- * RESPUESTA GET (ejemplo):
- * {
- *   data: {
- *     items: [{ _id, itemId, type, title, year, posterUrl, genres: ["Acción"], rating, likes, dislikes }],
- *     total: 15
- *   },
- *   error: null
- * }
- */
-
+// Géneros por tipo
 const GENRES = {
   movie: ["Acción", "Comedia", "Drama", "Romance", "Terror", "Fantasía", "Ciencia ficción", "Aventura"],
   tv: ["Acción", "Comedia", "Drama", "Misterio", "Ciencia ficción", "Documental", "Familia", "Crimen"],
@@ -38,30 +16,19 @@ const SORTS = [
 ];
 
 function useAuthToken() {
-  // const { token } = useAuth() || {};
-  const tokenFromLS = typeof window !== "undefined" ? localStorage.getItem("access_token") : "";
-  // return token || tokenFromLS || "";
-  return tokenFromLS || "";
+  return (typeof window !== "undefined" && localStorage.getItem("access_token")) || "";
 }
 
 function mapItem(raw) {
-  // Mapea lo que venga del backend a un shape uniforme para la UI
   return {
     id: raw._id || raw.id || raw.itemId || String(Math.random()),
     itemId: raw.itemId || raw._id || raw.id,
     type: raw.type || "movie",
     title: raw.title || raw.name || "Sin título",
     year: raw.year || raw.releaseYear || "",
-    poster:
-      raw.posterUrl ||
-      raw.poster ||
-      raw.image ||
-      raw.cover ||
-      null,
+    poster: raw.posterUrl || raw.poster || raw.image || raw.cover || null,
     genres: raw.genres || raw.categories || [],
     rating: Number(raw.rating || 0),
-    likes: Number(raw.likes || 0),
-    dislikes: Number(raw.dislikes || 0),
   };
 }
 
@@ -75,20 +42,15 @@ export default function FavoritesPage() {
   const [total, setTotal] = useState(0);
   const [busyId, setBusyId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showSearch, setShowSearch] = useState(false);
 
   const genreOptions = useMemo(() => GENRES[type] || [], [type]);
 
   async function fetchFavorites() {
     try {
       setLoading(true);
-      const params = new URLSearchParams({
-        type,
-        genre,
-        sort,
-        limit: "24",
-        offset: "0",
-      });
-      const res = await fetch(`/api/v1/favorites?${params.toString()}`, {
+      const params = new URLSearchParams({ type, genre, sort, limit: "24", offset: "0" });
+      const res = await fetch(`/api/v1/favorites?${params}`, {
         headers: {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -115,7 +77,6 @@ export default function FavoritesPage() {
   async function removeFavorite(it) {
     try {
       setBusyId(it.id);
-      // Si tu backend borra por itemId en query, cambia la URL a `/api/v1/favorites?itemId=${it.itemId}`
       const res = await fetch(`/api/v1/favorites/${encodeURIComponent(it.id)}`, {
         method: "DELETE",
         headers: {
@@ -128,7 +89,6 @@ export default function FavoritesPage() {
       setTotal((n) => Math.max(0, n - 1));
     } catch (e) {
       console.error(e);
-      // opcional: muestra toast
     } finally {
       setBusyId(null);
     }
@@ -140,11 +100,22 @@ export default function FavoritesPage() {
       <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
         <div className="flex items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <div className="text-xl font-semibold" style={{ color: "#e50914" }}>PixelFlix</div>
+            <a href="/home" className="text-xl font-semibold" style={{ color: "#e50914" }}>PixelFlix</a>
             <div className="text-sm opacity-80">Favoritos</div>
           </div>
-          <div className="flex items-center gap-2 text-xs opacity-70">
-            <Filter className="w-4 h-4" /><span>Filtros</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowSearch(true)}
+              className="rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-sm opacity-90 transition hover:bg-white/10"
+              title="Buscar"
+            >
+              <div className="flex items-center gap-2">
+                <SearchIcon className="w-4 h-4" /> <span>Buscar</span>
+              </div>
+            </button>
+            <div className="flex items-center gap-2 text-xs opacity-70">
+              <Filter className="w-4 h-4" /><span>Filtros</span>
+            </div>
           </div>
         </div>
       </div>
@@ -205,7 +176,12 @@ export default function FavoritesPage() {
                 <div key={i} className="relative aspect-[2/3] overflow-hidden rounded-lg shimmer" />
               ))
             : items.map((it) => (
-                <div key={it.id} className="group relative aspect-[2/3] overflow-hidden rounded-lg" style={{ backgroundColor: "#141414" }}>
+                <div
+                  key={it.id}
+                  className="group relative aspect-[2/3] overflow-hidden rounded-lg"
+                  style={{ backgroundColor: "#141414" }}
+                >
+                  {/* Poster */}
                   <div
                     className="absolute inset-0 bg-center"
                     style={{
@@ -213,7 +189,8 @@ export default function FavoritesPage() {
                       backgroundSize: "cover",
                     }}
                   />
-                  {/* Overlay info */}
+
+                  {/* Overlay inferior mínimo */}
                   <div className="absolute inset-x-0 bottom-0">
                     <div className="h-20 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="px-2 pb-2">
@@ -224,20 +201,37 @@ export default function FavoritesPage() {
                     </div>
                   </div>
 
-                  {/* Rating chip */}
-                  <div className="absolute left-2 top-2 rounded-md bg-black/70 px-2 py-1 text-xs">
-                    ★ {it.rating?.toFixed ? it.rating.toFixed(1) : Number(it.rating || 0).toFixed(1)}
+                  {/* HOVER: ficha estilo Netflix (solo UI) */}
+                  <div className="pointer-events-none absolute inset-0 flex items-end bg-black/0 opacity-0 transition-opacity duration-200 group-hover:bg-black/20 group-hover:opacity-100">
+                    <div className="w-full p-3">
+                      <div className="rounded-lg border border-white/15 bg-black/70 p-3 backdrop-blur">
+                        <div className="mb-1 flex items-center justify-between gap-2">
+                          <div className="text-sm font-semibold line-clamp-1">{it.title}</div>
+                          <div className="text-xs opacity-70">{it.year || "2024"}</div>
+                        </div>
+                        <div className="mb-2 text-[11px] opacity-70 line-clamp-2">
+                          Sinopsis breve de ejemplo para mostrar el hover. Conecta aquí la descripción real.
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            title="Más info"
+                            className="pointer-events-auto rounded-full border border-white/20 bg-white/10 p-2 transition hover:bg-white/20"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => removeFavorite(it)}
+                            disabled={busyId === it.id}
+                            title="Quitar de favoritos"
+                            className="pointer-events-auto rounded-full border border-white/20 bg-white/10 p-2 transition hover:bg-white/20"
+                          >
+                            <Heart className="w-4 h-4" />
+                          </button>
+                          <div className="ml-auto rounded-md bg-black/60 px-2 py-1 text-xs">★ {Number(it.rating || 0).toFixed(1)}</div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-
-                  {/* Quitar de favoritos */}
-                  <button
-                    onClick={() => removeFavorite(it)}
-                    disabled={busyId === it.id}
-                    title="Quitar de favoritos"
-                    className="absolute right-2 top-2 rounded-full border border-white/20 bg-black/60 p-2 opacity-90 transition hover:scale-105"
-                  >
-                    {busyId === it.id ? <X className="w-4 h-4" /> : <Heart className="w-4 h-4" />}
-                  </button>
                 </div>
               ))}
         </div>
@@ -246,6 +240,9 @@ export default function FavoritesPage() {
           <div className="mt-16 text-center opacity-70">No tienes favoritos en esta categoría.</div>
         )}
       </main>
+
+      {/* Buscador reutilizable */}
+      {showSearch && <NetflixSearch onClose={() => setShowSearch(false)} />}
     </div>
   );
 }
