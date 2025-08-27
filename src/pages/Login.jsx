@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Footer } from "../components/Footer";
 
 export default function Login() {
   const { login } = useAuth();
@@ -42,12 +43,20 @@ export default function Login() {
       setError("Error al iniciar sesión");
     }
   };
-
-  return (
-    <div className="flex items-center justify-center h-screen bg-gray-900 text-white">
+return (
+  <div className="bg-black text-white">
+    {/* Contenedor del formulario con fondo personalizado */}
+    <div
+      className="h-screen flex items-center justify-center"
+      style={{
+        backgroundImage: `url('https://assets.nflxext.com/ffe/siteui/vlv3/3e4bd046-85a3-40e1-842d-fa11cec84349/web/CO-es-20250818-TRIFECTA-perspective_783420e1-1a07-4c2a-9f3c-585857c3ec6c_large.jpg')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <form
         onSubmit={handleSubmit}
-        className="bg-gray-800 p-8 rounded-lg shadow-lg w-96"
+        className="bg-gray-800/90 p-8 rounded-lg shadow-lg w-96"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
 
@@ -85,5 +94,10 @@ export default function Login() {
         </button>
       </form>
     </div>
-  );
+
+    {/* Footer con fondo negro */}
+    <Footer className="bg-black" />
+  </div>
+);
+
 }
