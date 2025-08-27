@@ -1,10 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { Footer } from "../components/Footer";
+import NetflixSearch from "../components/Search";
 
 // --- Config / Fuentes de datos ---
 const TMDB_KEY = import.meta.env?.VITE_TMDB_KEY || "";
 const TMDB_IMG = "https://image.tmdb.org/t/p/w342";
+
+
+
+
+
+
 
 // Géneros por categoría (ids por API)
 const GENRES = {
@@ -57,7 +64,7 @@ function Row({ title, items, loading }) {
 
   return (
     <section className="content-section">
-      <h2 className="mb-3 px-4 text-xl font-semibold md:px-12">{title}</h2>
+      <h2 className="mb-6  text-xl font-semibold">{title}</h2>
 
       <div className="group relative">
         <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -68,18 +75,18 @@ function Row({ title, items, loading }) {
 
         <div
           ref={trackRef}
-          className="scrollbar-hide netflix-section-padding flex gap-3 overflow-x-auto pb-2"
+          className="scrollbar-hide netflix-section-padding flex gap-3 overflow-x-auto "
         >
           {loading
             ? Array.from({ length: 12 }).map((_, i) => (
-                <div key={i} className="relative h-44 w-32 flex-shrink-0 overflow-hidden rounded-md md:h-64 md:w-44 shimmer" />
+                <div key={i} className="relative h-74 w-32 flex-shrink-0 overflow-hidden rounded-md md:h-74 md:w-84 shimmer" />
               ))
             : items.map((it) => (
                 <div
                   key={it.id}
                   role="button"
                   tabIndex={0}
-                  className="group relative h-44 w-32 flex-shrink-0 overflow-hidden rounded-md md:h-64 md:w-44"
+                  className="group relative h-44 w-32 flex-shrink-0 overflow-hidden rounded-md md:h-84 md:w-54"
                   style={{ backgroundColor: "#141414" }}
                   title={it.title}
                 >
@@ -92,14 +99,6 @@ function Row({ title, items, loading }) {
                       backgroundSize: "cover",
                     }}
                   />
-                  <div className="absolute inset-x-0 bottom-0">
-                    <div className="h-16 bg-gradient-to-t from-black/80 to-transparent" />
-                    <div className="px-2 pb-2">
-                      <div className="line-clamp-1 text-xs md:text-sm opacity-95">{it.title}</div>
-                      {it.tag && <div className="text-[10px] opacity-60">{it.tag}</div>}
-                    </div>
-                  </div>
-                  <div className="absolute inset-0 scale-100 transition-transform duration-200 group-hover:scale-[1.04]" />
                 </div>
               ))}
         </div>
@@ -181,14 +180,14 @@ function mapToYTS(genreTxt) {
 
 function GenreChips({ options, value, onChange }) {
   return (
-    <div className="flex flex-wrap gap-2 px-4 md:px-12">
+    <div className="flex flex-wrap gap-7">
       {options.map((g) => (
         <div
           key={g}
           role="button"
           tabIndex={0}
           onClick={() => onChange(g)}
-          className={`select-none rounded-full border px-3 py-1 text-xs transition ${
+          className={`select-none h-8 content-center rounded-full border px-3 py-1 text-sm transition ${
             value === g ? "border-white/70 bg-white/20" : "border-white/15 bg-white/5 hover:bg-white/10"
           }`}
         >
@@ -245,28 +244,62 @@ function CategorySection({ type, title }) {
   }, [type, genre]);
 
   return (
-    <div className="mb-10">
-      <div className="mb-3 flex items-center justify-between px-4 md:px-12">
-        <h1 className="text-2xl font-semibold">{title}</h1>
+    <div className="mb-10 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-semibold">{title}</h2>
       </div>
 
       <GenreChips options={genreOptions} value={genre} onChange={setGenre} />
 
-      <Row title={`Explora ${title} • ${genre}`} items={items} loading={loading} />
+      <Row title={`Explora ${title} De ${genre}`} items={items} loading={loading} />
     </div>
   );
 }
 
 export default function CategoriesPage() {
+
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const searchRef = useRef(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="min-h-screen netflix-container">
+    <div className="min-h-screen netflix-container p-4">
       {/* Header simple */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
+      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur py-5">
         <div className="flex items-center gap-6">
-          <a href="/home" className="text-xl font-semibold" style={{ color: "#e50914" }}>
+          <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
             PixelFlix
           </a>
-          <div className="text-sm opacity-80">Categorías</div>
+          <div className="flex space-x-1">
+            <a href="/home" className="text-sm opacity-80 hover:text-gray-300">Home </a>
+            <span className="text-sm opacity-80"> / </span>
+            <a href="/categorias" className="text-sm opacity-80 hover:text-gray-300">Categorías</a>
+          </div>
+          <div className="relative flex items-center ml-280" ref={searchRef}>
+              <Search
+                className="text-white w-5 h-5 cursor-pointer hover:text-gray-300 transition-colors"
+                onClick={() => setShowSearch(true)}
+              />
+          </div>
         </div>
       </div>
 
@@ -279,6 +312,11 @@ export default function CategoriesPage() {
 
       {/* Footer sutil */}
       <Footer className="bg-black" />
+      {/* Buscador modal */}
+      {showSearch && (
+        <NetflixSearch onClose={() => setShowSearch(false)} />
+      )}
     </div>
+    
   );
 }

@@ -3,6 +3,7 @@ import {
   User, Mail, Phone, MapPin, Image as ImageIcon, Upload as UploadIcon,
   Eye, EyeOff, Lock, LogOut, Download, Trash2, Shield, Bell, Check
 } from "lucide-react";
+import { Footer } from "../components/Footer";
 
 function useAuthToken() {
   return (typeof window !== "undefined" && localStorage.getItem("access_token")) || "";
@@ -37,12 +38,12 @@ export default function AccountPage() {
   const [err, setErr] = useState("");
 
   const [profile, setProfile] = useState({
-    email: "",
-    name: "",
-    phone: "",
-    country: "",
-    avatar: "",        // URL actual
-    createdAt: "",
+    email: "s3basbetan@gmail.com",
+    name: "Sebastian Betancourt",
+    phone: "57+ 300 000 0000",
+    country: "Colombia",
+    avatar: "https://imagenes.elpais.com/resizer/v2/U6RLCK5DBNAFFO2KKEHPXVWNOY.jpg?auth=da6a83131da7456288001b8d32b8d6b48d57ff45eabc194f449f1aa8a32e5943&width=1960&height=1103&focal=2035%2C1108",        // URL actual
+    createdAt: "12/12/2023",
   });
 
   // Avatar: archivo / URL + preview
@@ -76,14 +77,15 @@ export default function AccountPage() {
         const me = await api("/api/v1/me", { token }); // { data: { email, name, phone, country, avatar, createdAt, preferences: {...} } }
         const data = me?.data || me;
         if (!mounted) return;
-        setProfile({
-          email: data.email || "",
-          name: data.name || "",
-          phone: data.phone || "",
-          country: data.country || "",
-          avatar: data.avatar || "",
-          createdAt: data.createdAt || "",
-        });
+        setProfile((prev) => ({
+          ...prev,
+          email: data.email || prev.email,
+          name: data.name || prev.name,
+          phone: data.phone || prev.phone,
+          country: data.country || prev.country,
+          avatar: data.avatar || prev.avatar,
+          createdAt: data.createdAt || prev.createdAt,
+        }));
         setPrefs({
           marketingEmails: !!data?.preferences?.marketingEmails ?? false,
           personalizedRecs: data?.preferences?.personalizedRecs !== false, // default ON
@@ -194,19 +196,7 @@ export default function AccountPage() {
     }
   }
 
-  async function logoutAll() {
-    setMsg(""); setErr("");
-    if (!confirm("¿Cerrar sesión en todos los dispositivos?")) return;
-    try {
-      setSecBusy(true);
-      await api("/api/v1/me/sessions", { method: "DELETE", token });
-      setMsg("Sesiones cerradas en todos los dispositivos.");
-    } catch (e) {
-      setErr(String(e.message || e));
-    } finally {
-      setSecBusy(false);
-    }
-  }
+
 
   async function exportData() {
     setMsg(""); setErr("");
@@ -249,17 +239,25 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen netflix-container">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
-        <div className="flex items-center justify-between">
+
+      
+        {/* Header simple */}
+        <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
           <div className="flex items-center gap-6">
-            <a href="/home" className="text-xl font-semibold" style={{ color: "#e50914" }}>PixelFlix</a>
-            <div className="text-sm opacity-80">Mi cuenta</div>
-          </div>
-          <div className="text-xs opacity-70 flex items-center gap-2">
-            <Shield className="w-4 h-4" /> Seguridad y datos
+            <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
+              PixelFlix
+            </a>
+            <div className="flex space-x-1">
+              <a href="/home" className="text-sm opacity-80 hover:text-gray-300">Home </a>
+              <span className="text-sm opacity-80"> / </span>
+              <a href="/profile" className="text-sm opacity-80 hover:text-gray-300">Cuenta</a>
+            </div>
+            <div className="text-xs ml-250 opacity-70 flex items-center gap-2">
+              <Shield className="w-4 h-4" /> Seguridad y datos
+            </div>
           </div>
         </div>
-      </div>
+
 
       <main className="px-4 pb-16 pt-4 md:px-12">
         {/* Mensajes */}
@@ -329,7 +327,7 @@ export default function AccountPage() {
                       <Mail className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 opacity-60" size={16} />
                       <input
                         disabled
-                        value={profile.email}
+                        value={profile.email }
                         className="h-11 w-full cursor-not-allowed rounded-md border border-white/20 bg-white/10 pl-9 pr-3 outline-none"
                       />
                     </div>
@@ -401,17 +399,7 @@ export default function AccountPage() {
                       <span className="text-sm">Compartir datos anonimizados para mejorar el servicio</span>
                     </label>
 
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm opacity-80">Conservación de datos (meses):</span>
-                      <input
-                        type="number"
-                        min={1}
-                        max={36}
-                        value={prefs.dataRetentionMonths}
-                        onChange={(e) => setPrefs((s) => ({ ...s, dataRetentionMonths: Number(e.target.value || 12) }))}
-                        className="h-10 w-20 rounded-md border border-white/20 bg-white/10 px-2 outline-none transition focus:border-[#e50914]"
-                      />
-                    </div>
+                    
                   </div>
 
                   <p className="mt-3 text-xs opacity-70">
@@ -499,15 +487,7 @@ export default function AccountPage() {
                   >
                     {secBusy ? "Actualizando..." : "Actualizar contraseña"}
                   </button>
-                  <button
-                    type="button"
-                    onClick={logoutAll}
-                    disabled={secBusy}
-                    className="rounded-md border border-white/15 bg-white/5 px-4 py-2 transition hover:bg-white/10"
-                    title="Cerrar sesión en todos los dispositivos"
-                  >
-                    <LogOut className="mr-2 inline-block" size={16} /> Cerrar sesión en todos los dispositivos
-                  </button>
+                  
                   <div className="ml-auto text-xs opacity-70">
                     Recomendación: habilita contraseñas largas y únicas. Tokens con **rotación** periódica.
                   </div>
@@ -568,6 +548,7 @@ export default function AccountPage() {
           </>
         )}
       </main>
+      <Footer className="bg-black" />
     </div>
   );
 }
