@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play, Plus, Check, Heart, X, Star, Users } from "lucide-react";
+import { Play, Plus, Check, Heart, X, Star, Users, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import { useBodyScrollLock } from "../hooks/useScrollLock";
 
@@ -41,13 +41,15 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
   const [comments, setComments] = useState([]);
   const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
+  const [titulo, setTitulo] = useState("");
 
   const handleAddComment = () => {
-    if (username.trim() && comment.trim() && starRating > 0) {
+    if (titulo.trim() && username.trim() && comment.trim() && starRating > 0) {
       setComments([
         ...comments,
-        { id: Date.now(), username, comment, starRating },
+        { id: Date.now(), titulo, username, comment, starRating },
       ]);
+      setTitulo("")
       setUsername("");
       setComment("");
       setStarRating(0); // reset después de enviar
@@ -261,7 +263,17 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               </div>
               
 
+
+              
+
               <div className="flex flex-col">
+                <input
+                    type="text"
+                    placeholder="Escribe el titulo"
+                    value={titulo}
+                    onChange={(e) => setTitulo(e.target.value)}
+                    className="w-80 mt-4 p-2 rounded bg-neutral-800 border border-neutral-700"
+                  />
                 <input
                   type="text"
                   placeholder="Escribe tu nombre"
@@ -288,24 +300,42 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               </div>
 
               {/* Mostrar comentarios */}
-              <div className="flex flex-wrap w-full mt-2 space-x-4">
+              <div className="flex flex-wrap w-full mt-2 gap-4">
                 {comments.map((c) => (
-                  <div key={c.id} className="p-3 bg-neutral-800 rounded-lg border border-neutral-700 mt-5">
-                    <h4 className="font-semibold">{c.username}</h4>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star
-                          key={star}
-                          className={`w-4 h-4 ${
-                            c.starRating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-500"
-                          }`}
-                        />
-                      ))}
+                  <div
+                    key={c.id}
+                    className="flex flex-col p-3 bg-neutral-800 rounded-lg border border-neutral-700 mt-5 max-w-[300px] w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.5rem)] lg:w-[600px]"
+                  >
+                    <h2 className="font-semibold text-lg">{c.titulo}</h2>
+                    <span className=" text-sm italic">{c.username}</span>
+                    
+                    <div className="flex justify-between items-center w-full mt-1">
+                      {/* Estrellas a la izquierda */}
+                      <div className="flex">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              c.starRating >= star
+                                ? "text-yellow-400 fill-yellow-400"
+                                : "text-gray-500"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      
+                      {/* Pulgares a la derecha */}
+                      <div className="flex gap-1">
+                        <ThumbsUp className="w-4 h-4 text-gray-300" />
+                        <ThumbsDown className="w-4 h-4 text-gray-300" />
+                      </div>
                     </div>
-                    <p className="mt-2 text-sm opacity-80">{c.comment}</p>
+                      
+                    <p className="mt-2 text-sm opacity-80 break-words">{c.comment}</p>
                   </div>
                 ))}
               </div>
+
             </div>
 
 

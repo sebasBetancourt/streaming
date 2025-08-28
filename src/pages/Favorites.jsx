@@ -97,57 +97,42 @@ export default function FavoritesPage() {
   return (
     <div className="min-h-screen netflix-container">
       {/* Header */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
+      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-6 md:px-12">
         <div className="flex items-center justify-between gap-6">
           <div className="flex items-center gap-6">
-            <a href="/home" className="text-xl font-semibold" style={{ color: "#e50914" }}>PixelFlix</a>
-            <div className="text-sm opacity-80">Favoritos</div>
+            <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
+              PixelFlix
+            </a>
+            <div className="flex space-x-1">
+              <a href="/home" className="text-sm opacity-80 hover:text-gray-300">Home </a>
+              <span className="text-sm opacity-80"> / </span>
+              <a href="/favorites" className="text-sm opacity-80 hover:text-gray-300">Favoritos</a>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowSearch(true)}
-              className="rounded-md border border-white/15 bg-white/5 px-3 py-1.5 text-sm opacity-90 transition hover:bg-white/10"
-              title="Buscar"
-            >
-              <div className="flex items-center gap-2">
-                <SearchIcon className="w-4 h-4" /> <span>Buscar</span>
-              </div>
-            </button>
+          <div className="flex items-center gap-5">
+              <SearchIcon onClick={() => setShowSearch(true)} className="w-5 h-5 opacity-70" />
             <div className="flex items-center gap-2 text-xs opacity-70">
               <Filter className="w-4 h-4" /><span>Filtros</span>
             </div>
           </div>
         </div>
       </div>
-
       {/* Filtros */}
       <div className="px-4 py-4 md:px-12 md:py-5">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex gap-1 rounded-md border border-white/15 bg-white/5 p-1">
+          <div className="flex gap-1 ">
             {["movie", "tv", "anime"].map((t) => (
               <button
                 key={t}
                 onClick={() => { setType(t); setGenre((GENRES[t] || [])[0]); }}
-                className={`px-3 py-1.5 rounded ${type === t ? "bg-white/20" : "hover:bg-white/10"}`}
+                className={`px-3 py-1.5 ${type === t ? "border-b-3 border-red-800 inline-block pb-1" : "hover:bg-white/10"}`}
               >
                 {t === "movie" ? "Películas" : t === "tv" ? "Series" : "Anime"}
               </button>
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {genreOptions.map((g) => (
-              <button
-                key={g}
-                onClick={() => setGenre(g)}
-                className={`rounded-full border px-3 py-1 text-xs transition ${
-                  genre === g ? "border-white/70 bg-white/20" : "border-white/15 bg-white/5 hover:bg-white/10"
-                }`}
-              >
-                {g}
-              </button>
-            ))}
-          </div>
+          
 
           <div className="ml-auto flex items-center gap-2 text-sm">
             <SortAsc className="w-4 h-4 opacity-70" />
@@ -157,11 +142,24 @@ export default function FavoritesPage() {
               className="rounded-md border border-white/15 bg-white/5 px-2 py-1 outline-none"
             >
               {SORTS.map((s) => (
-                <option key={s.value} value={s.value}>{s.label}</option>
+                <option className="bg-black" key={s.value} value={s.value}>{s.label}</option>
               ))}
             </select>
           </div>
         </div>
+      </div>
+      <div className="flex flex-wrap gap-2 px-4 py-1 md:px-12 md:py-2 mb-6">
+        {genreOptions.map((g) => (
+          <button
+            key={g}
+            onClick={() => setGenre(g)}
+            className={`select-none h-8 content-center rounded-full border px-3 py-1 text-sm transition  ${
+              genre === g ? "border-white/70 bg-white/20" : "border-white/15 bg-white/5 hover:bg-white/10"
+            }`}
+          >
+            {g}
+          </button>
+        ))}
       </div>
 
       {/* Grid */}

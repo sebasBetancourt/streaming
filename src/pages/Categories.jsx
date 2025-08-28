@@ -284,7 +284,7 @@ export default function CategoriesPage() {
   return (
     <div className="min-h-screen netflix-container p-4">
       {/* Header simple */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur py-5">
+      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur py-4 mb-5">
         <div className="flex items-center gap-6">
           <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
             PixelFlix

@@ -605,9 +605,9 @@ export default function AdminPage() {
                 onChange={(e) => setRFilter({ status: e.target.value })}
                 className="rounded-md border border-white/15 bg-white/5 px-2 py-1 outline-none"
               >
-                <option value="all">Todas</option>
-                <option value="reported">Reportadas</option>
-                <option value="low-score">Baja puntuación</option>
+                <option className="bg-black" value="all">Todas</option>
+                <option className="bg-black" value="reported">Reportadas</option>
+                <option className="bg-black" value="low-score">Baja puntuación</option>
               </select>
             </div>
 
@@ -718,9 +718,9 @@ export default function AdminPage() {
                 onChange={(e) => setUFilter((s) => ({ ...s, role: e.target.value }))}
                 className="rounded-md border border-white/15 bg-white/5 px-2 py-2 outline-none"
               >
-                <option value="all">Todos</option>
-                <option value="user">Usuarios</option>
-                <option value="admin">Admins</option>
+                <option className="bg-black" value="all">Todos</option>
+                <option className="bg-black" value="user">Usuarios</option>
+                <option className="bg-black" value="admin">Admins</option>
               </select>
               <input
                 placeholder="Buscar por email/nombre..."
@@ -870,9 +870,9 @@ export default function AdminPage() {
                     onChange={onTitleInput}
                     className="w-full h-11 rounded-md border border-white/20 bg-white/10 px-3 text-white outline-none transition focus:border-[#e50914]"
                   >
-                    <option value="">Selecciona género</option>
+                    <option className="bg-black" value="">Selecciona género</option>
                     {(GENRES[form.type] || []).map((g) => (
-                      <option key={g} value={g}>{g}</option>
+                      <option className="bg-black" key={g} value={g}>{g}</option>
                     ))}
                   </select>
                 </div>
