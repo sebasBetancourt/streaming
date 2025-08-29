@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play, Plus, Check, Heart, X, Star, Users, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Play, Plus, Check, Heart, X, Star, Users, ThumbsUp, ThumbsDown, HeartOff } from "lucide-react";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import { useBodyScrollLock } from "../hooks/useScrollLock";
 
@@ -156,6 +156,12 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               >
                 <Heart className="h-4 w-4" />
               </button>
+              <button
+                onClick={toggleFav}
+                className={`rounded-full border p-2 transition ${isFav ? "border-red-500/60 bg-red-600/30 hover:bg-red-600/40" : "border-white/25 bg-white/10 hover:bg-white/20"}`}
+              >
+                <HeartOff className="h-4 w-4" />
+              </button>
             </div>
           </div>
         </div>
@@ -255,7 +261,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
             </div>
 
             
-            <div className="w-200 pr-4 bg-neutral-900 text-white">
+            <div className="w-200 pr-4 bg-neutral-900 text-white mt-10">
               <div className="flex mb-3 items-center space-x-2">
                 <h3 className="text-lg font-semibold">Comentarios</h3>
                 <Users className="mr-8 h-5 w-5"></Users>

@@ -1,19 +1,58 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import Login from "../pages/Login";
-import Home from "../pages/Home";
-import Admin from "../pages/Admin";
-import CategoriesPage from "../pages/Categories";
-import FavoritesPage from "../pages/Favorites";
-import MyListPage from "../pages/List";
-import ProfilePage from "../pages/Profile";
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Login from '../pages/Login.jsx';
+import Home from '../pages/Home.jsx';
+import Admin from '../pages/Admin.jsx';
+import CategoriesPage from '../pages/Categories.jsx';
+import FavoritesPage from '../pages/Favorites.jsx';
+import MyListPage from '../pages/List.jsx';
+import ProfilePage from '../pages/Profile.jsx';
 
 const PrivateRoute = ({ children, role }) => {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/login" />;
+  const { user, logout } = useAuth();
+  const [isValidating, setIsValidating] = useState(true);
+  const [isValid, setIsValid] = useState(false);
 
-  // si se requiere rol específico
-  if (role && user.role !== role) return <Navigate to="/" />;
+  useEffect(() => {
+    const validateToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!user || !token) {
+        setIsValid(false);
+        setIsValidating(false);
+        return;
+      }
+
+      try {
+        await axios.get('http://localhost:3000/auth/verify', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setIsValid(true);
+      } catch (err) {
+        console.error('Token inválido:', err);
+        logout();
+        setIsValid(false);
+      }
+      setIsValidating(false);
+    };
+
+    validateToken();
+  }, [user, logout]);
+
+  if (isValidating) {
+    return <div>Cargando...</div>;
+  }
+
+  if (!isValid) {
+    console.log('No user o token inválido, redirigiendo a /login');
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role && user.role !== role) {
+    console.log(`Rol no coincide: esperado ${role}, actual ${user.role}`);
+    return <Navigate to="/home" replace />;
+  }
 
   return children;
 };
@@ -22,65 +61,69 @@ export default function AppRouter() {
   const { user } = useAuth();
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Página inicial → login */}
-        <Route path="/login" element={<Login />} />
-
-        {/* Redirigir root "/" al login si no hay usuario */}
-        <Route
-          path="/"
-          element={
-            !user ? (
-              <Navigate to="/login" />
-            ) : user.role === "admin" ? (
-              <Navigate to="/admin" />
-            ) : (
-              <Navigate to="/home" />
-            )
-          }
-        />
-
-        {/* Usuario normal */}
-        <Route
-          path="/home"
-          element={
-            <PrivateRoute role="user">
-              <Home />
-            </PrivateRoute>
-          }
-        />
-
-        <Route 
-        path="/categories" 
-        element={<CategoriesPage />} 
-        />
-        <Route 
-        path="/favorites" 
-        element={<FavoritesPage />} 
-        />
-        <Route 
-        path="/list" 
-        element={<MyListPage />} 
-        />
-        <Route 
-        path="/profile" 
-        element={<ProfilePage />} 
-        />
-
-        {/* Admin */}
-        <Route
-          path="/admin"
-          element={
-            <PrivateRoute role="admin">
-              <Admin />
-            </PrivateRoute>
-          }
-        />
-
-        {/* fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/"
+        element={
+          !user ? (
+            <Navigate to="/login" replace />
+          ) : user.role === 'admin' ? (
+            <Navigate to="/admin" replace />
+          ) : (
+            <Navigate to="/home" replace />
+          )
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <PrivateRoute role="user">
+            <Home />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/categories"
+        element={
+          <PrivateRoute role="user">
+            <CategoriesPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/favorites"
+        element={
+          <PrivateRoute role="user">
+            <FavoritesPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/list"
+        element={
+          <PrivateRoute role="user">
+            <MyListPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute role="user">
+            <ProfilePage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute role="admin">
+            <Admin />
+          </PrivateRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

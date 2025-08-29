@@ -18,7 +18,8 @@ import {
   ThumbsDown,
 } from "lucide-react";
 import NetflixSearch from "../components/Search";
-
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 // ====================== Helpers ======================
 function useAuthToken() {
   return (typeof window !== "undefined" && localStorage.getItem("access_token")) || "";
@@ -80,6 +81,9 @@ export default function AdminPage() {
   const token = useAuthToken();
   const [tab, setTab] = useState("overview"); // overview | titles | reviews | categories | users
   const [showSearch, setShowSearch] = useState(false);
+
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   // ---- Overview (métricas) ----
   const [metrics, setMetrics] = useState({ users: 0, titles: 0, reviews: 0, pending: 0 });
@@ -409,7 +413,14 @@ export default function AdminPage() {
             >
 
               <div className="flex items-center gap-2">
-                <a href="/login"><X className="h-4 w-4"></X></a>
+                <a 
+                  href="#" 
+                  onClick={() => {
+                      logout();
+                      navigate("/login");
+                    }}>
+                  <X className="h-4 w-4"></X>
+                </a>
               </div>
             </button>
           </div>

@@ -1,43 +1,55 @@
+// src/components/Login.jsx
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { Footer } from "../components/Footer";
+import { Footer } from "../components/Footer.jsx";
+import { register, login } from "../api/auth.js";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login: authLogin, user } = useAuth();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [showRegister, setShowRegister] = useState(false);
 
-  // --- Register UI/logic ---
   const [registerData, setRegisterData] = useState({
     email: "",
     telefono: "",
     pais: "",
     password: "",
     confirmPassword: "",
+    name: "",
   });
   const [regError, setRegError] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [showPw2, setShowPw2] = useState(false);
-  const [closing, setClosing] = useState(false); // para animación de salida
+  const [closing, setClosing] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/home", { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const openRegister = () => {
     setRegError("");
     setShowRegister(true);
     setClosing(false);
   };
+
   const closeRegister = () => {
     setClosing(true);
     setTimeout(() => {
       setShowRegister(false);
       setClosing(false);
-    }, 220); // debe coincidir con animation duration
+    }, 220);
   };
 
-  // ESC para cerrar modal
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape" && showRegister) closeRegister();
@@ -57,47 +69,71 @@ export default function Login() {
     return () => document.removeEventListener("mousedown", onClick);
   }, [showRegister]);
 
-  // --- Login ---
   const handleChange = (e) =>
     setFormData((s) => ({ ...s, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
     try {
-      if (formData.email === "admin@geek.com" && formData.password === "1234") {
-        login({ email: formData.email, role: "admin" });
-        navigate("/admin");
-      } else if (formData.email === "user@geek.com" && formData.password === "1234") {
-        login({ email: formData.email, role: "user" });
-        navigate("/home");
-      } else {
-        setError("Credenciales incorrectas");
+      const response = await login(formData);
+      console.log('Respuesta completa de login:', response);
+      if (!response.user) {
+        throw new Error('No se recibió el objeto user en la respuesta del servidor');
       }
-    } catch {
-      setError("Error al iniciar sesión");
+      authLogin(response.user, response.token);
+      console.log('Usuario autenticado:', response.user);
+      if (response.user.role === "admin") {
+        navigate("/admin", { replace: true });
+      } else {
+        navigate("/home", { replace: true });
+      }
+    } catch (err) {
+      console.error('Error en handleSubmit:', err);
+      setError(err.message || "Error al iniciar sesión. Verifica tus credenciales.");
     }
   };
 
-  // --- Register ---
   const handleRegisterChange = (e) =>
     setRegisterData((s) => ({ ...s, [e.target.name]: e.target.value }));
 
-  const handleRegisterSubmit = (e) => {
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setRegError("");
     if (registerData.password !== registerData.confirmPassword) {
       setRegError("Las contraseñas no coinciden.");
       return;
     }
-    // TODO: lógica real de registro
-    closeRegister();
-    setRegisterData({ email: "", telefono: "", pais: "", password: "", confirmPassword: "" });
+    try {
+      const { confirmPassword, telefono, pais, ...dataToSend } = registerData;
+      const payload = {
+        ...dataToSend,
+        phone: telefono || null,
+        country: pais || null
+      };
+      console.log('Datos enviados a register:', payload);
+      const response = await register(payload);
+      console.log('Respuesta de register:', response);
+      closeRegister();
+      setRegisterData({
+        email: "",
+        telefono: "",
+        pais: "",
+        password: "",
+        confirmPassword: "",
+        name: "",
+      });
+      setFormData({ email: registerData.email, password: registerData.password });
+      setError("Registro exitoso. Por favor, inicia sesión.");
+    } catch (err) {
+      console.error('Error en handleRegisterSubmit:', err);
+      setRegError(err.message || "Error al registrar usuario. Verifica los datos ingresados.");
+    }
   };
 
   return (
     <div id="Footer" className="bg-black text-white min-h-screen flex flex-col">
       <div className="relative flex-1">
-        {/* Fondo */}
         <div
           className="absolute inset-0"
           style={{
@@ -108,12 +144,10 @@ export default function Login() {
             zIndex: 0,
           }}
         />
-        {/* Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 z-10"></div>
         <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black to-transparent z-10"></div>
         <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black to-transparent z-10"></div>
 
-        {/* Logo */}
         <div className="absolute top-0 left-0 w-full flex justify-start z-20">
           <a
             href="#"
@@ -124,7 +158,6 @@ export default function Login() {
           </a>
         </div>
 
-        {/* Formulario login */}
         <div className="relative z-20 flex items-center justify-center min-h-screen">
           <form
             onSubmit={handleSubmit}
@@ -181,7 +214,6 @@ export default function Login() {
               Iniciar Sesión
             </button>
 
-            {/* Separador */}
             <div className="my-5 flex items-center gap-3">
               <div className="h-px flex-1 bg-white/15"></div>
               <div className="text-sm opacity-70">O</div>
@@ -201,19 +233,16 @@ export default function Login() {
             </div>
           </form>
 
-          {/* Scrim inferior */}
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
         </div>
       </div>
 
-      {/* Modal de registro (animado) */}
       {showRegister && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
           aria-modal="true"
           role="dialog"
         >
-          {/* Overlay */}
           <div
             className="absolute inset-0 bg-black/70"
             style={{ animation: `${closing ? "overlayOut" : "overlayIn"} 220ms ease both` }}
@@ -221,13 +250,11 @@ export default function Login() {
             aria-hidden="true"
           ></div>
 
-          {/* Sheet */}
           <div
             ref={modalRef}
             className="relative w-[22rem] md:w-[30rem] rounded-2xl border border-white/10 bg-zinc-900/95 shadow-2xl backdrop-blur-md"
             style={{ animation: `${closing ? "modalOut" : "modalIn"} 220ms ease both` }}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
               <div className="font-semibold">Crear cuenta</div>
               <button
@@ -240,11 +267,9 @@ export default function Login() {
               </button>
             </div>
 
-            {/* Body */}
             <form onSubmit={handleRegisterSubmit} className="px-6 py-5">
-              {/* Tip/Tagline */}
               <div className="mb-4 text-sm opacity-80">
-                Disfruta series, películas y mucho mas.
+                Disfruta series, películas y mucho más.
               </div>
 
               {regError && (
@@ -253,7 +278,6 @@ export default function Login() {
                 </div>
               )}
 
-              {/* Grid responsive, diseño más limpio */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="md:col-span-2">
                   <input
@@ -268,12 +292,22 @@ export default function Login() {
                 </div>
                 <div>
                   <input
+                    type="text"
+                    name="name"
+                    placeholder="Nombre"
+                    value={registerData.name}
+                    onChange={handleRegisterChange}
+                    required
+                    className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
+                  />
+                </div>
+                <div>
+                  <input
                     type="tel"
                     name="telefono"
                     placeholder="Teléfono"
                     value={registerData.telefono}
                     onChange={handleRegisterChange}
-                    required
                     className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
                   />
                 </div>
@@ -284,7 +318,6 @@ export default function Login() {
                     placeholder="País"
                     value={registerData.pais}
                     onChange={handleRegisterChange}
-                    required
                     className="w-full h-11 rounded-md border border-white/15 bg-white/10 px-3 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
                   />
                 </div>
@@ -326,7 +359,6 @@ export default function Login() {
                 </div>
               </div>
 
-              {/* Footer del modal */}
               <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div className="text-xs opacity-70">
                   Al registrarte aceptas nuestros <span className="underline">Términos</span> y{" "}
@@ -353,7 +385,6 @@ export default function Login() {
         </div>
       )}
 
-      {/* Footer */}
       <Footer className="bg-black" />
     </div>
   );
