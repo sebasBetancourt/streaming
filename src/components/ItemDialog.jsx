@@ -101,7 +101,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
 
 
 
-  // hooks estables
+  
   const boxRef = useRef(null);
   const closeBtnRef = useRef(null);
   const { inList, isFav, toggleList, toggleFav } = useShelfItem(fullItem || {});
@@ -147,9 +147,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
 
   const modal = (
     <div className="fixed inset-0 z-[100]">
-      {/* backdrop */}
       <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      {/* caja modal */}
       <div
         ref={boxRef}
         className="relative mx-auto mt-12 w-[94vw] max-w-5xl max-h-[86vh] grid grid-rows-[auto_1fr] overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/95 shadow-2xl backdrop-blur-md"
@@ -157,7 +155,6 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
         aria-modal="true"
         aria-label={`Detalles de ${title}`}
       >
-        {/* Header con imagen (fila 1) */}
         <div className="relative h-56 w-full md:h-80">
           <div className="absolute inset-0 bg-center" style={{ backgroundImage: `url(${fullItem.posterUrl})`, backgroundSize: "cover" }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />

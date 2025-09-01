@@ -21,7 +21,6 @@ export function ContentCard({ id, title, image, year, rating, duration, rank, de
         onClick={() => setOpen(true)}
       >
         <div className="relative w-full overflow-hidden rounded-md" style={{ aspectRatio: "16/9" }}>
-          {/* sello y rank */}
           <div className="absolute left-2 top-2 z-20">
             <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-red-600 text-sm font-bold text-white">P</div>
           </div>

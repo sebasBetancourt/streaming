@@ -31,7 +31,6 @@ async function api(path, { method = "GET", token = "", headers = {}, body } = {}
 export default function AccountPage() {
   const token = useAuthToken();
 
-  // ----- Perfil -----
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
