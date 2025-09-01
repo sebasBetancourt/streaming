@@ -57,14 +57,14 @@ export function ContentCard({ id, title, image, year, rating, duration, rank, de
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleList(); }}
-                  className="rounded-full border border-gray-600 bg-gray-800/80 p-2 text-white transition-colors hover:bg-gray-700"
+                  className={`rounded-full border transition ${inList ? "border-gray-600 bg-green-600 p-2 text-white transition-colors hover:bg-gray-700" : "border-gray-600 bg-gray-800/80 p-2 text-white transition-colors hover:bg-gray-700"} text-white`}
                   title={inList ? "Quitar de Mi Lista" : "Añadir a Mi Lista"}
                 >
                   {inList ? <Check className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
                 </button>
                 <button
                   onClick={(e) => { e.stopPropagation(); toggleFav(); }}
-                  className={`rounded-full border p-2 transition ${isFav ? "border-red-500/60 bg-red-600/30 hover:bg-red-600/40" : "border-gray-600 bg-gray-800/80 hover:bg-gray-700"} text-white`}
+                  className={`rounded-full border p-2 transition ${isFav ? "border-red-500/60 bg-red-600 hover:bg-red-600/40" : "border-gray-600 bg-gray-800/80 hover:bg-gray-700"} text-white`}
                   title={isFav ? "Quitar de Favoritos" : "Añadir a Favoritos"}
                 >
                   <Heart className="h-3 w-3" />

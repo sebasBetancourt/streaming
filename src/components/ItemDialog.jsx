@@ -57,7 +57,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
           rating: data.ratingAvg?.toFixed(1) || "0.0",
           duration: data.type === "tv" || data.type === "anime" ? `${data.temps || 1} Temp / ${data.eps || 1} eps` : "Película",
           genres: data.categories || [],
-          // Asume que el backend devuelve 'creator' y otras campos adicionales
+          author: data.author || "Desconocido",
         });
       } catch (err) {
         console.error("Error cargando item completo:", err);
@@ -142,7 +142,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
 
   if (!open || !fullItem) return null;
 
-  const { title, image, year, rating, duration, description, type, genres = [], creator } = fullItem;
+  const { title, image, year, rating, duration, description, type, genres = [], creator, author } = fullItem;
   const match = rating ? `${Math.round(parseFloat(rating) * 10)}% Match` : null;
 
   const modal = (
@@ -186,21 +186,21 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               </button>
               <button
                 onClick={toggleList}
-                className="rounded-full border border-white/25 bg-white/10 p-2 transition hover:bg-white/20"
+                className={`rounded-full border transition ${inList ? "border-gray-600 bg-green-600 p-2 text-white transition-colors hover:bg-gray-700" : "border-gray-600 bg-gray-800/80 p-2 text-white transition-colors hover:bg-gray-700"} text-white`}
                 title={inList ? "Quitar de Mi Lista" : "Añadir a Mi Lista"}
               >
                 {inList ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
               </button>
               <button
                 onClick={toggleFav}
-                className={`rounded-full border p-2 transition ${isFav ? "border-red-500/60 bg-red-600/30 hover:bg-red-600/40" : "border-white/25 bg-white/10 hover:bg-white/20"}`}
+                className={`rounded-full border p-2 transition ${isFav ? "border-red-500/60 bg-red-600 hover:bg-red-600/40" : "border-gray-600 bg-gray-800/80 hover:bg-gray-700"}`}
                 title={isFav ? "Quitar de Favoritos" : "Añadir a Favoritos"}
               >
                 <Heart className="h-4 w-4" />
               </button>
               <button
                 onClick={toggleFav}
-                className={`rounded-full border p-2 transition ${isFav ? "border-red-500/60 bg-red-600/30 hover:bg-red-600/40" : "border-white/25 bg-white/10 hover:bg-white/20"}`}
+                className={`rounded-full border p-2 transition ${isFav ? "border-blue-500/60 bg-blue-800 hover:bg-blue-600/40" : "border-white/25 bg-white/10 hover:bg-white/20"}`}
               >
                 <HeartOff className="h-4 w-4" />
               </button>
@@ -273,6 +273,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                 {year && <li><span className="opacity-60">Año:</span> {year}</li>}
                 {type && <li><span className="opacity-60">Tipo:</span> {type}</li>}
                 {!!genres.length && <li><span className="opacity-60">Géneros:</span> {genres.join(", ")}</li>}
+                {author && <li><span className="opacity-60">Autor:</span> {author}</li>}
               </ul>
 
               <div className="mt-4 grid grid-cols-2 gap-2">
