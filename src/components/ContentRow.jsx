@@ -16,12 +16,12 @@ export function ContentRow({ id, title, items, showRank = false }) {
                   title={item.title}
                   image={item.image}
                   year={item.year}
-                  rating={item.rating}
-                  duration={item.duration}
+                  rating={item.ratingAvg}
                   rank={showRank ? item.rank : undefined}
                   description={item.description}
-                  type={item.type}          // opcional si lo tienes
-                  genres={item.genres}      // opcional si lo tienes
+                  type={item.type}          
+                  genres={item.categories}
+                  creator={item.creator}
                 />
               </div>
             ))}

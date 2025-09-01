@@ -5,7 +5,6 @@ import { useShelfItem } from "../hooks/useLocalShelf";
 import { useBodyScrollLock } from "../hooks/useScrollLock";
 
 export default function ItemDialog({ user ,open, onClose, item, suggestions = [] }) {
-  // bloquear fondo (sin tocar tu layout)
   useBodyScrollLock(!!open);
 
   const usuarioData = {
@@ -42,17 +41,60 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
   const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
   const [titulo, setTitulo] = useState("");
+  const [fullItem, setFullItem] = useState(item);
 
-  const handleAddComment = () => {
+  useEffect(() => {
+    if (!open || !item) return;
+    const fetchFullItem = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/titles/${item.id}`);
+        const data = await res.json();
+        setFullItem({
+          ...data,
+          id: data._id,
+          image: data.posterUrl,
+          posterUrl: data.posterUrl,
+          rating: data.ratingAvg?.toFixed(1) || "0.0",
+          duration: data.type === "tv" || data.type === "anime" ? `${data.temps || 1} Temp / ${data.eps || 1} eps` : "Película",
+          genres: data.categories || [],
+          // Asume que el backend devuelve 'creator' y otras campos adicionales
+        });
+      } catch (err) {
+        console.error("Error cargando item completo:", err);
+      }
+    };
+    fetchFullItem();
+
+    const fetchComments = async () => {
+      try {
+        const res = await fetch(`http://localhost:3000/titles/${item.id}/comments`);
+        const data = await res.json();
+        setComments(data);
+      } catch (err) {
+        console.error("Error cargando comentarios:", err);
+      }
+    };
+    fetchComments();
+  }, [open, item]);
+
+  const handleAddComment = async () => {
     if (titulo.trim() && username.trim() && comment.trim() && starRating > 0) {
-      setComments([
-        ...comments,
-        { id: Date.now(), titulo, username, comment, starRating },
-      ]);
-      setTitulo("")
-      setUsername("");
-      setComment("");
-      setStarRating(0); // reset después de enviar
+      const newComment = { titulo, username, comment, starRating };
+      try {
+        const res = await fetch(`http://localhost:3000/titles/${item.id}/comments`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newComment),
+        });
+        const added = await res.json();
+        setComments([...comments, added]);
+        setTitulo("");
+        setUsername("");
+        setComment("");
+        setStarRating(0);
+      } catch (err) {
+        console.error("Error añadiendo comentario:", err);
+      }
     }
   };
 
@@ -62,7 +104,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
   // hooks estables
   const boxRef = useRef(null);
   const closeBtnRef = useRef(null);
-  const { inList, isFav, toggleList, toggleFav } = useShelfItem(item || {});
+  const { inList, isFav, toggleList, toggleFav } = useShelfItem(fullItem || {});
 
   useEffect(() => {
     if (!open) return;
@@ -85,22 +127,22 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
     return () => { clearTimeout(t); document.removeEventListener("keydown", onKey); };
   }, [open, onClose]);
 
-  const isTV = (item?.type || "").toLowerCase() === "tv";
+  const isTV = (fullItem?.type || "").toLowerCase() === "tv";
   const episodes = useMemo(
     () => (isTV
       ? Array.from({ length: 6 }).map((_, i) => ({
           id: `ep-${i + 1}`,
           title: `Episodio ${i + 1}`,
           length: ["42m", "50m", "47m"][i % 3],
-          thumb: item?.image
+          thumb: fullItem?.image
         }))
       : []),
-    [isTV, item?.image]
+    [isTV, fullItem?.image]
   );
 
-  if (!open || !item) return null;
+  if (!open || !fullItem) return null;
 
-  const { title, image, year, rating, duration, description, type, genres = [] } = item;
+  const { title, image, year, rating, duration, description, type, genres = [], creator } = fullItem;
   const match = rating ? `${Math.round(parseFloat(rating) * 10)}% Match` : null;
 
   const modal = (
@@ -117,7 +159,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
       >
         {/* Header con imagen (fila 1) */}
         <div className="relative h-56 w-full md:h-80">
-          <div className="absolute inset-0 bg-center" style={{ backgroundImage: `url(${image})`, backgroundSize: "cover" }} />
+          <div className="absolute inset-0 bg-center" style={{ backgroundImage: `url(${fullItem.posterUrl})`, backgroundSize: "cover" }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
           <button
             ref={closeBtnRef}
@@ -173,7 +215,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
             <div className="md:col-span-2">
               <div className="flex">
                 <h3 className="mb-2 text-sm font-semibold opacity-90 mr-2">Usuario/Creador:</h3>
-                <span className="text-sm opacity-70">{usuarioData.nombre}</span>
+                <span className="text-sm opacity-70">{creator}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <h3 className="mb-2 text-sm font-semibold opacity-90 mr-2">Calificación:</h3>

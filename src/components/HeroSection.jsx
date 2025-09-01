@@ -1,16 +1,16 @@
 import { Play, Info, Volume2, VolumeX } from "lucide-react";
 import { Button } from "./ui/button";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import ItemDialog from "./ItemDialog";
+import { data } from "react-router-dom";
 
 export function HeroSection() {
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
 
-  // 👇 Estado para el diálogo
+
   const [open, setOpen] = useState(false);
 
-  // 👇 Item del Hero (mismo shape que las cards)
   const heroItem = {
     id: "dexter",
     title: "Dexter",
@@ -24,6 +24,44 @@ export function HeroSection() {
     description:
       "Dexter Morgan un experto en salpicaduras de sangre que reside en Miami, no resuelve solamente casos de asesinato sino que también los comete. Es una forma de justicia única en la cual el encantador Dexter se siente ávido de llevarla a cabo."
   };
+  const [itemData, setItemData] = useState(heroItem); 
+  const [loading, setLoading] = useState(true);
+
+  const pedirDatos = async () => {
+    try {
+      const res = await fetch(`http://localhost:3000/titles/68b4f2fe718e64204c2260fb`);
+      const datosUser = await res.json();
+      return {
+        id: datosUser._id,
+        title: datosUser.title,
+        image: datosUser.posterUrl,
+        year: datosUser.year,
+        rating: datosUser.ratingAvg?.toFixed(1) || "0.0",
+        duration:
+          datosUser.type === "tv" || datosUser.type === "anime"
+            ? `${datosUser.temps || 1} Temp / ${datosUser.eps || 1} eps`
+            : "Película",
+        description: datosUser.description,
+        type: datosUser.type,
+        categories: datosUser.categories || [],
+        creator: datosUser.creator || "Desconocido",
+      };
+    } catch (err) {
+      console.error("Error cargando item completo:", err);
+      return heroItem; // Si falla, devolvemos el item temporal
+    }
+  };
+
+  // useEffect para cargar datos completos solo una vez
+  useEffect(() => {
+    const fetchItem = async () => {
+      setLoading(true);
+      const datos = await pedirDatos();
+      setItemData(datos);
+      setLoading(false);
+    };
+    fetchItem();
+  }, []); 
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -42,28 +80,24 @@ export function HeroSection() {
       className="relative w-full overflow-hidden"
       style={{ minHeight: "calc(100vh - 64px)", paddingTop: "84px" }}
     >
-      {/* Background Image */}
       <div className="absolute inset-0">
         <img
-          src={heroItem.image}
+          src={itemData.image}
           alt="Dexter Background"
           className="w-full h-full object-cover"
         />
-        {/* Gradient overlays */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30"></div>
       </div>
 
-      {/* Audio hidden */}
       <audio
         ref={audioRef}
-        src="/sounds/dexter-theme.mp3"
+        src="/sounds/strager-things-theme.mp3"
         autoPlay
         loop
         muted={isMuted}
       />
 
-      {/* Mute/Unmute Button */}
       <button
         onClick={toggleMute}
         className="absolute top-24 right-8 md:top-32 md:right-16 z-20 bg-black/50 hover:bg-black/70 text-white rounded-full p-3 transition-colors border border-gray-600"
@@ -86,7 +120,7 @@ export function HeroSection() {
         {/* Title */}
         <div className="mb-6">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 leading-tight tracking-wide">
-            {heroItem.title}
+            {itemData.title}
           </h1>
 
           {/* Badge */}
@@ -97,7 +131,7 @@ export function HeroSection() {
           </div>
 
           <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl leading-relaxed">
-            {heroItem.description}
+            {itemData.description}
           </p>
         </div>
 
@@ -129,7 +163,7 @@ export function HeroSection() {
       <div className="mb-68"></div>
 
       {/* Dialogo con el MISMO item del Hero */}
-      <ItemDialog open={open} onClose={() => setOpen(false)} item={heroItem} />
+      <ItemDialog open={open} onClose={() => setOpen(false)} item={itemData} />
     </div>
   );
 }

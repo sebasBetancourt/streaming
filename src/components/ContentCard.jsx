@@ -3,16 +3,16 @@ import { useState } from "react";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import ItemDialog from "./ItemDialog";
 
-export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres }) {
+export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator }) {
   const [imageError, setImageError] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const item = { id, title, image, year, rating, duration, rank, description, type, genres };
+  const item = { id, title, image, year, rating, duration, rank, description, type, genres, creator };
   const { inList, isFav, toggleList, toggleFav } = useShelfItem(item);
 
   const fallbackImage =
     "https://via.placeholder.com/400x225/141414/ffffff?text=" + encodeURIComponent(title || "Poster");
-  const match = rating ? `${Math.round(parseFloat(rating) * 10)}% Match` : null;
+  const match = rating ? `${Math.round(parseFloat(rating))}% Ranking` : null;
 
   return (
     <>
