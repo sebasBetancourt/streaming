@@ -114,21 +114,20 @@ export default function ItemDialog({
   const handleAddComment = async () => {
     if (titulo.trim() && comment.trim() && starRating > 0) {
       const newComment = {
-        titulo,
+        title: titulo,
         username: user?.nombre || "Usuario",
         comment,
-        starRating,
+        score: starRating,
         titleId: item.id,
       };
       try {
         await axios.post("http://localhost:3000/reviews/create", newComment);
-        // refrescar lista de comentarios
         fetchComments(item.id);
         setTitulo("");
         setComment("");
         setStarRating(0);
       } catch (err) {
-        console.error("Error añadiendo comentario:", err);
+        console.error("Error añadiendo comentario:", err, newComment);
       }
     }
   };
@@ -385,7 +384,7 @@ export default function ItemDialog({
                 <StarRating starRating={starRating} setStarRating={setStarRating} />
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-3">
                 <input
                     type="text"
                     placeholder="Escribe el titulo"
