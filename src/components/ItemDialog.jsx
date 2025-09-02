@@ -1,22 +1,30 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Play, Plus, Check, Heart, X, Star, Users, ThumbsUp, ThumbsDown, HeartOff } from "lucide-react";
+import {
+  Play,
+  Plus,
+  Check,
+  Heart,
+  X,
+  Star,
+  Users,
+  ThumbsUp,
+  ThumbsDown,
+  HeartOff,
+} from "lucide-react";
+import axios from "axios";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import { useBodyScrollLock } from "../hooks/useScrollLock";
 
-export default function ItemDialog({ user ,open, onClose, item, suggestions = [] }) {
+export default function ItemDialog({
+  user,
+  open,
+  onClose,
+  item,
+  suggestions = [],
+}) {
   useBodyScrollLock(!!open);
 
-  const usuarioData = {
-    "nombre": "Santiago Bernabeu",
-     "ranking": 5.0,
-     "comentarios": [
-      "Me parece una buen Series muy entretenida 100% recomendada",
-      "Muy buena calidad 10/10  "
-     ]
-  }
-
-  
   const [starRating, setStarRating] = useState(0);
 
   const StarRating = ({ starRating, setStarRating }) => {
@@ -26,11 +34,17 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
           <Star
             key={star}
             className={`w-5 h-5 cursor-pointer transition-colors ${
-              starRating >= star ? "text-yellow-400 fill-yellow-400" : "text-gray-400"
+              starRating >= star
+                ? "text-yellow-400 fill-yellow-400"
+                : "text-gray-400"
             }`}
             onClick={() => setStarRating(star)}
-            onMouseEnter={(e) => e.currentTarget.classList.add("text-yellow-300")}
-            onMouseLeave={(e) => e.currentTarget.classList.remove("text-yellow-300")}
+            onMouseEnter={(e) =>
+              e.currentTarget.classList.add("text-yellow-300")
+            }
+            onMouseLeave={(e) =>
+              e.currentTarget.classList.remove("text-yellow-300")
+            }
           />
         ))}
       </div>
@@ -38,24 +52,41 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
   };
 
   const [comments, setComments] = useState([]);
-  const [username, setUsername] = useState("");
   const [comment, setComment] = useState("");
   const [titulo, setTitulo] = useState("");
   const [fullItem, setFullItem] = useState(item);
+  const [ranking, setRanking] = useState(0);
+
+  // función para cargar comentarios
+  const fetchComments = async (titleId) => {
+    try {
+      const { data } = await axios.get(
+        `http://localhost:3000/reviews/list?titleId=${titleId}`
+      );
+      setComments(data || []);
+    } catch (err) {
+      console.error("Error cargando comentarios:", err);
+    }
+  };
 
   useEffect(() => {
     if (!open || !item) return;
+
     const fetchFullItem = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/titles/${item.id}`);
-        const data = await res.json();
+        const { data } = await axios.get(
+          `http://localhost:3000/titles/${item.id}`
+        );
         setFullItem({
           ...data,
           id: data._id,
           image: data.posterUrl,
           posterUrl: data.posterUrl,
           rating: data.ratingAvg?.toFixed(1) || "0.0",
-          duration: data.type === "tv" || data.type === "anime" ? `${data.temps || 1} Temp / ${data.eps || 1} eps` : "Película",
+          duration:
+            data.type === "tv" || data.type === "anime"
+              ? `${data.temps || 1} Temp / ${data.eps || 1} eps`
+              : "Película",
           genres: data.categories || [],
           author: data.author || "Desconocido",
         });
@@ -65,31 +96,35 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
     };
     fetchFullItem();
 
-    const fetchComments = async () => {
+    fetchComments(item.id);
+
+    const fetchRanking = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/titles/${item.id}/comments`);
-        const data = await res.json();
-        setComments(data);
+        const { data } = await axios.get(
+          `http://localhost:3000/reviews/ranking/${item.id}`
+        );
+        setRanking(data.ranking || 0);
       } catch (err) {
-        console.error("Error cargando comentarios:", err);
+        console.error("Error cargando ranking:", err);
       }
     };
-    fetchComments();
+    fetchRanking();
   }, [open, item]);
 
   const handleAddComment = async () => {
-    if (titulo.trim() && username.trim() && comment.trim() && starRating > 0) {
-      const newComment = { titulo, username, comment, starRating };
+    if (titulo.trim() && comment.trim() && starRating > 0) {
+      const newComment = {
+        titulo,
+        username: user?.nombre || "Usuario",
+        comment,
+        starRating,
+        titleId: item.id,
+      };
       try {
-        const res = await fetch(`http://localhost:3000/titles/${item.id}/comments`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(newComment),
-        });
-        const added = await res.json();
-        setComments([...comments, added]);
+        await axios.post("http://localhost:3000/reviews/create", newComment);
+        // refrescar lista de comentarios
+        fetchComments(item.id);
         setTitulo("");
-        setUsername("");
         setComment("");
         setStarRating(0);
       } catch (err) {
@@ -98,10 +133,24 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
     }
   };
 
+  const handleLike = async (id) => {
+    try {
+      await axios.put(`http://localhost:3000/reviews/like/${id}`);
+      fetchComments(item.id);
+    } catch (err) {
+      console.error("Error dando like:", err);
+    }
+  };
 
+  const handleDislike = async (id) => {
+    try {
+      await axios.put(`http://localhost:3000/reviews/dislike/${id}`);
+      fetchComments(item.id);
+    } catch (err) {
+      console.error("Error dando dislike:", err);
+    }
+  };
 
-
-  
   const boxRef = useRef(null);
   const closeBtnRef = useRef(null);
   const { inList, isFav, toggleList, toggleFav } = useShelfItem(fullItem || {});
@@ -118,31 +167,60 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
         const list = Array.from(fEls);
         const first = list[0];
         const last = list[list.length - 1];
-        if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
-        else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+        if (e.shiftKey && document.activeElement === first) {
+          last.focus();
+          e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          first.focus();
+          e.preventDefault();
+        }
       }
     };
     const t = setTimeout(() => closeBtnRef.current?.focus(), 0);
     document.addEventListener("keydown", onKey);
-    return () => { clearTimeout(t); document.removeEventListener("keydown", onKey); };
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener("keydown", onKey);
+    };
   }, [open, onClose]);
 
   const isTV = (fullItem?.type || "").toLowerCase() === "tv";
   const episodes = useMemo(
-    () => (isTV
-      ? Array.from({ length: 6 }).map((_, i) => ({
-          id: `ep-${i + 1}`,
-          title: `Episodio ${i + 1}`,
-          length: ["42m", "50m", "47m"][i % 3],
-          thumb: fullItem?.image
-        }))
-      : []),
+    () =>
+      isTV
+        ? Array.from({ length: 6 }).map((_, i) => ({
+            id: `ep-${i + 1}`,
+            title: `Episodio ${i + 1}`,
+            length: ["42m", "50m", "47m"][i % 3],
+            thumb: fullItem?.image,
+          }))
+        : [],
     [isTV, fullItem?.image]
+  );
+
+  const totalLikes = useMemo(
+    () => comments.reduce((sum, c) => sum + (c.likes || 0), 0),
+    [comments]
+  );
+  const totalDislikes = useMemo(
+    () => comments.reduce((sum, c) => sum + (c.dislikes || 0), 0),
+    [comments]
   );
 
   if (!open || !fullItem) return null;
 
-  const { title, image, year, rating, duration, description, type, genres = [], creator, author } = fullItem;
+  const {
+    title,
+    image,
+    year,
+    rating,
+    duration,
+    description,
+    type,
+    genres = [],
+    creator,
+    author,
+  } = fullItem;
   const match = rating ? `${Math.round(parseFloat(rating) * 10)}% Match` : null;
 
   const modal = (
@@ -233,11 +311,11 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                 </div>
                 <div className="rounded-lg border border-white/10 bg-white/[0.05] p-3">
                   <div className="text-xs opacity-70">Ranking ponderado</div>
-                  <div className="mt-1 text-lg font-semibold">{usuarioData.ranking}</div>
+                  <div className="mt-1 text-lg font-semibold">{ranking.toFixed(1)}</div>
                 </div>
                 <div className="rounded-lg border border-white/10 bg-white/[0.05] p-3">
                   <div className="text-xs opacity-70">Likes / Dislikes</div>
-                  <div className="mt-1 text-lg font-semibold">—</div>
+                  <div className="mt-1 text-lg font-semibold">{totalLikes} / {totalDislikes}</div>
                 </div>
               </div>
 
@@ -300,17 +378,12 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               )}
             </div>
 
-            
             <div className="w-200 pr-4 bg-neutral-900 text-white mt-10">
               <div className="flex mb-3 items-center space-x-2">
                 <h3 className="text-lg font-semibold">Comentarios</h3>
                 <Users className="mr-8 h-5 w-5"></Users>
                 <StarRating starRating={starRating} setStarRating={setStarRating} />
               </div>
-              
-
-
-              
 
               <div className="flex flex-col">
                 <input
@@ -320,13 +393,6 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                     onChange={(e) => setTitulo(e.target.value)}
                     className="w-80 mt-4 p-2 rounded bg-neutral-800 border border-neutral-700"
                   />
-                <input
-                  type="text"
-                  placeholder="Escribe tu nombre"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-80 mt-4 mb-4 p-2 rounded bg-neutral-800 border border-neutral-700"
-                />
 
                 <textarea
                   placeholder="Escribe tu comentario..."
@@ -334,8 +400,6 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                   onChange={(e) => setComment(e.target.value)}
                   className="w-80 mb-1 p-2 rounded bg-neutral-800 border border-neutral-700"
                 />
-
-
 
                 <button
                   onClick={handleAddComment}
@@ -349,7 +413,7 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               <div className="flex flex-wrap w-full mt-2 gap-4">
                 {comments.map((c) => (
                   <div
-                    key={c.id}
+                    key={c._id}
                     className="flex flex-col p-3 bg-neutral-800 rounded-lg border border-neutral-700 mt-5 max-w-[300px] w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.5rem)] lg:w-[600px]"
                   >
                     <h2 className="font-semibold text-lg">{c.titulo}</h2>
@@ -372,8 +436,12 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
                       
                       {/* Pulgares a la derecha */}
                       <div className="flex gap-1">
-                        <ThumbsUp className="w-4 h-4 text-gray-300" />
-                        <ThumbsDown className="w-4 h-4 text-gray-300" />
+                        <button onClick={() => handleLike(c._id)} className="flex items-center gap-1">
+                          <ThumbsUp className="w-4 h-4 text-gray-300" />
+                        </button>
+                        <button onClick={() => handleDislike(c._id)} className="flex items-center gap-1">
+                          <ThumbsDown className="w-4 h-4 text-gray-300" />
+                        </button>
                       </div>
                     </div>
                       
@@ -383,7 +451,6 @@ export default function ItemDialog({ user ,open, onClose, item, suggestions = []
               </div>
 
             </div>
-
 
           </div>
         </div>

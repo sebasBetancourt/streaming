@@ -1,32 +1,39 @@
-import { useEffect } from "react";
-import { useAuth } from "./context/AuthContext.jsx";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import AppRouter from "./routes/AppRouter.jsx";
-
-
+// src/App.jsx
+import { useEffect } from 'react';
+import { useAuth } from './context/AuthContext.jsx';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import AppRouter from './routes/AppRouter.jsx';
 
 function App() {
-  const { user, logout, login } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const validateSession = async () => {
-      try {
-        axios.defaults.withCredentials = true;
-        axios.defaults.baseURL = "http://localhost:3000";
-        const response = await axios.get("http://localhost:3000/auth/verify");
-        console.log("Respuesta de /auth/verify:", response.data);
-        login(response.data.user); 
-      } catch (err) {
-        console.error("Sesión inválida:", err);
+      const token = localStorage.getItem('token');
+      console.log('Validando sesión con token:', token); // Para depuración
+      if (!user || !token) {
+        console.log('No hay usuario o token, cerrando sesión');
         logout();
-        navigate("/login", { replace: true });
+        navigate('/login', { replace: true });
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:3000/auth/verify', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('Respuesta de /auth/verify:', response.data);
+      } catch (err) {
+        console.error('Sesión inválida:', err);
+        logout();
+        navigate('/login', { replace: true });
       }
     };
 
     validateSession();
-  }, [logout, login, navigate]);
+  }, [user, logout, navigate]);
 
   return <AppRouter />;
 }

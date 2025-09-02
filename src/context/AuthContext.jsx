@@ -1,38 +1,24 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
+// src/context/AuthContext.jsx
+import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/auth/verify", {
-          withCredentials: true, 
-        });
-        setUser(res.data.user); 
-      } catch (err) {
-        console.error("No hay sesión activa", err);
-        setUser(null);
-      }
-    };
-
-    checkSession();
-  }, []);
-
-  // login solo guarda el usuario que el backend devuelve
-  const login = async (credentials) => {
-    const res = await axios.post("http://localhost:3000/auth/login", credentials, {
-      withCredentials: true, 
-    });
-    setUser(res.data.user);
+  const login = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', token);
   };
 
-  const logout = async () => {
-    await axios.post("http://localhost:3000/auth/logout", {}, { withCredentials: true });
+  const logout = () => {
     setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   return (
@@ -45,7 +31,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth debe usarse dentro de un AuthProvider");
+    throw new Error('useAuth debe usarse dentro de un AuthProvider');
   }
   return context;
 }
