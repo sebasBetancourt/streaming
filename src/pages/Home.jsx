@@ -4,6 +4,7 @@ import { ContentRow } from "../components/ContentRow";
 import { Footer } from "../components/Footer";
 import { useState, useEffect } from "react";
 import ItemDialog from "../components/ItemDialog";
+import { use } from "react";
 
 export default function Home() {
   const [titles, setTitles] = useState([]);
@@ -31,6 +32,7 @@ export default function Home() {
           categories: t.categories || [],
           rank: i + 1,
           creator: t.creator || "Desconocido",
+          createdBy: t.createdBy || null,
         }));
 
         setTitles(mapped);

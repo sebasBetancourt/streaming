@@ -22,6 +22,7 @@ export function ContentRow({ id, title, items, showRank = false }) {
                   type={item.type}          
                   genres={item.categories}
                   creator={item.creator}
+                  createdBy={item.createdBy}
                 />
               </div>
             ))}

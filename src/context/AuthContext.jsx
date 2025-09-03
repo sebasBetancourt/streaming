@@ -1,5 +1,5 @@
-// src/context/AuthContext.jsx
 import { createContext, useContext, useState } from 'react';
+import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
@@ -10,9 +10,12 @@ export function AuthProvider({ children }) {
   });
 
   const login = (userData, token) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', token);
+    const decoded = jwtDecode(token);
+    const fullUser = { ...userData, _id: decoded.id }; // 👈 usar decoded.id
+    setUser(fullUser);
+
+    localStorage.setItem("user", JSON.stringify(fullUser));
+    localStorage.setItem("token", token);
   };
 
   const logout = () => {

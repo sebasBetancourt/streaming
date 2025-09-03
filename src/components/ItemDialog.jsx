@@ -25,6 +25,7 @@ export default function ItemDialog({
 }) {
   useBodyScrollLock(!!open);
 
+
   const [starRating, setStarRating] = useState(0);
 
   const StarRating = ({ starRating, setStarRating }) => {
@@ -57,7 +58,6 @@ export default function ItemDialog({
   const [fullItem, setFullItem] = useState(item);
   const [ranking, setRanking] = useState(0);
 
-  // función para cargar comentarios
   const fetchComments = async (titleId) => {
     try {
       const { data } = await axios.get(
@@ -112,29 +112,48 @@ export default function ItemDialog({
   }, [open, item]);
 
   const handleAddComment = async () => {
-    if (titulo.trim() && comment.trim() && starRating > 0) {
-      const newComment = {
-        title: titulo,
-        username: user?.nombre || "Usuario",
-        comment,
-        score: starRating,
-        titleId: item.id,
-      };
-      try {
-        await axios.post("http://localhost:3000/reviews/create", newComment);
-        fetchComments(item.id);
-        setTitulo("");
-        setComment("");
-        setStarRating(0);
-      } catch (err) {
-        console.error("Error añadiendo comentario:", err, newComment);
-      }
+    if (!comment.trim()) return;
+
+    const newComment = {
+      title: titulo,
+      comment,
+      score: starRating,
+      titleId: fullItem.id || fullItem._id,
+    };
+
+    try {
+      const { data: savedReview } = await axios.post(
+        "http://localhost:3000/reviews/create",
+        newComment,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setComments((prev) => [...prev, savedReview]);
+
+      setComment("");
+      setTitulo("");
+      setStarRating(0);
+    } catch (err) {
+      console.error("Error agregando comentario:", err);
     }
   };
 
+
   const handleLike = async (id) => {
     try {
-      await axios.put(`http://localhost:3000/reviews/like/${id}`);
+      await axios.put(
+        `http://localhost:3000/reviews/like/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       fetchComments(item.id);
     } catch (err) {
       console.error("Error dando like:", err);
@@ -143,12 +162,21 @@ export default function ItemDialog({
 
   const handleDislike = async (id) => {
     try {
-      await axios.put(`http://localhost:3000/reviews/dislike/${id}`);
+      await axios.put(
+        `http://localhost:3000/reviews/dislike/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       fetchComments(item.id);
     } catch (err) {
       console.error("Error dando dislike:", err);
     }
   };
+
 
   const boxRef = useRef(null);
   const closeBtnRef = useRef(null);
@@ -412,20 +440,20 @@ export default function ItemDialog({
               <div className="flex flex-wrap w-full mt-2 gap-4">
                 {comments.map((c) => (
                   <div
-                    key={c._id}
+                    key={c._id || `temp-${Math.random()}`}
                     className="flex flex-col p-3 bg-neutral-800 rounded-lg border border-neutral-700 mt-5 max-w-[300px] w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.5rem)] lg:w-[600px]"
                   >
-                    <h2 className="font-semibold text-lg">{c.titulo}</h2>
-                    <span className=" text-sm italic">{c.username}</span>
+                    <h2 className="font-semibold text-lg">{c.title}</h2>
+                    <span className=" text-sm italic">{c.user[0].name || "Anónimo"}</span>
                     
                     <div className="flex justify-between items-center w-full mt-1">
                       {/* Estrellas a la izquierda */}
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
-                            key={star}
+                            key={`${c._id || "temp"}-star-${star}`}
                             className={`w-4 h-4 ${
-                              c.starRating >= star
+                              c.score >= star
                                 ? "text-yellow-400 fill-yellow-400"
                                 : "text-gray-500"
                             }`}
@@ -436,10 +464,10 @@ export default function ItemDialog({
                       {/* Pulgares a la derecha */}
                       <div className="flex gap-1">
                         <button onClick={() => handleLike(c._id)} className="flex items-center gap-1">
-                          <ThumbsUp className="w-4 h-4 text-gray-300" />
+                          <ThumbsUp className="w-4 h-4 text-gray-300 cursor-pointer" /><span className="text-xs">{c.likesCount || 0}</span>
                         </button>
                         <button onClick={() => handleDislike(c._id)} className="flex items-center gap-1">
-                          <ThumbsDown className="w-4 h-4 text-gray-300" />
+                          <ThumbsDown className="w-4 h-4 text-gray-300 cursor-pointer" /><span className="text-xs">{c.dislikesCount || 0}</span>
                         </button>
                       </div>
                     </div>

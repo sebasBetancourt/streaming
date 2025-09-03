@@ -3,11 +3,11 @@ import { useState } from "react";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import ItemDialog from "./ItemDialog";
 
-export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator }) {
+export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy }) {
   const [imageError, setImageError] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const item = { id, title, image, year, rating, duration, rank, description, type, genres, creator };
+  const item = { id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy };
   const { inList, isFav, toggleList, toggleFav } = useShelfItem(item);
 
   const fallbackImage =
