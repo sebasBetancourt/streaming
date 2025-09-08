@@ -12,7 +12,7 @@ function App() {
   useEffect(() => {
     const validateSession = async () => {
       const token = localStorage.getItem('token');
-      console.log('Validando sesión con token:', token); // Para depuración
+      console.log('Validando sesión con token:', token); 
       if (!user || !token) {
         console.log('No hay usuario o token, cerrando sesión');
         logout();

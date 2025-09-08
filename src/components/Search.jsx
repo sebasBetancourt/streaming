@@ -31,7 +31,6 @@ export default function NetflixSearch({ onClose }) {
       try {
         const params = new URLSearchParams();
         params.append("skip", "0");
-        params.append("limit", "50");
 
         if (/^[0-9a-fA-F]{24}$/.test(debounced)) {
           params.append("categoriesId", debounced);
@@ -92,7 +91,7 @@ export default function NetflixSearch({ onClose }) {
             ref={inputRef}
             value={query}
             onChange={onInput}
-            placeholder="Busca por título, categoría o autor…"
+            placeholder="Busca un titulo…"
             className="flex-1 bg-transparent outline-none text-white placeholder:text-white/50"
           />
           {query && (

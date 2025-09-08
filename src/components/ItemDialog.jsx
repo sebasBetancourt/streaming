@@ -60,8 +60,9 @@ export default function ItemDialog({
 
   const fetchComments = async (titleId) => {
     try {
+      const id = item.id || item._id;
       const { data } = await axios.get(
-        `http://localhost:3000/reviews/list?titleId=${titleId}`
+        `http://localhost:3000/reviews/list?titleId=${id}`
       );
       setComments(data || []);
     } catch (err) {
@@ -74,8 +75,9 @@ export default function ItemDialog({
 
     const fetchFullItem = async () => {
       try {
+        const id = item.id || item._id;
         const { data } = await axios.get(
-          `http://localhost:3000/titles/${item.id}`
+          `http://localhost:3000/titles/${id}`
         );
         setFullItem({
           ...data,
@@ -89,6 +91,8 @@ export default function ItemDialog({
               : "Película",
           genres: data.categories || [],
           author: data.author || "Desconocido",
+          likes: data.likes,
+          dislikes: data.dislikes,
         });
       } catch (err) {
         console.error("Error cargando item completo:", err);
@@ -100,8 +104,9 @@ export default function ItemDialog({
 
     const fetchRanking = async () => {
       try {
+        const id = item.id || item._id;
         const { data } = await axios.get(
-          `http://localhost:3000/reviews/ranking/${item.id}`
+          `http://localhost:3000/reviews/ranking/${id}`
         );
         setRanking(data.ranking || 0);
       } catch (err) {
@@ -131,6 +136,7 @@ export default function ItemDialog({
           },
         }
       );
+      fetchComments(item.id);
 
       setComments((prev) => [...prev, savedReview]);
 
@@ -247,6 +253,8 @@ export default function ItemDialog({
     genres = [],
     creator,
     author,
+    likes, 
+    dislikes,
   } = fullItem;
   const match = rating ? `${Math.round(parseFloat(rating) * 10)}% Match` : null;
 
@@ -342,7 +350,7 @@ export default function ItemDialog({
                 </div>
                 <div className="rounded-lg border border-white/10 bg-white/[0.05] p-3">
                   <div className="text-xs opacity-70">Likes / Dislikes</div>
-                  <div className="mt-1 text-lg font-semibold">{totalLikes} / {totalDislikes}</div>
+                  <div className="mt-1 text-lg font-semibold">{likes} / {dislikes}</div>
                 </div>
               </div>
 
@@ -444,10 +452,9 @@ export default function ItemDialog({
                     className="flex flex-col p-3 bg-neutral-800 rounded-lg border border-neutral-700 mt-5 max-w-[300px] w-full sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.5rem)] lg:w-[600px]"
                   >
                     <h2 className="font-semibold text-lg">{c.title}</h2>
-                    <span className=" text-sm italic">{c.user[0].name || "Anónimo"}</span>
+                    <span className=" text-sm italic">{c.user?.[0]?.name || "Anónimo"}</span>
                     
                     <div className="flex justify-between items-center w-full mt-1">
-                      {/* Estrellas a la izquierda */}
                       <div className="flex">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
