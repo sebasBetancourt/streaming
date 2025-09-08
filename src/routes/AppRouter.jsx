@@ -9,7 +9,7 @@ import CategoriesPage from '../pages/Categories.jsx';
 import FavoritesPage from '../pages/Favorites.jsx';
 import MyListPage from '../pages/List.jsx';
 import ProfilePage from '../pages/Profile.jsx';
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const PrivateRoute = ({ children, role }) => {
   const { user, logout } = useAuth();
   const [isValidating, setIsValidating] = useState(true);
@@ -25,7 +25,7 @@ const PrivateRoute = ({ children, role }) => {
       }
 
       try {
-        await axios.get('http://localhost:3000/auth/verify', {
+        await axios.get(`${API_URL}/auth/verify`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setIsValid(true);

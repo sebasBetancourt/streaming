@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Row from "./Row";
 import GenreChips from "./ui/GenreChips";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function CategorySection({ type, title, categories, onSelectItem }) {
   const genreOptions = useMemo(() => categories.map((c) => c.name), [categories]);

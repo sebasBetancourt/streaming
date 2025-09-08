@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function NetflixSearch({ onClose }) {
   const [query, setQuery] = useState("");          
   const [debounced, setDebounced] = useState("");  
@@ -39,7 +41,7 @@ export default function NetflixSearch({ onClose }) {
           params.append("search", debounced);
         }
 
-        const res = await fetch(`http://localhost:3000/titles/list?${params.toString()}`, {
+        const res = await fetch(`${API_URL}/titles/list?${params.toString()}`, {
           signal: controller.signal,
         });
         if (!res.ok) throw new Error(`Error ${res.status}`);

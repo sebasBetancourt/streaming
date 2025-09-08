@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import AppRouter from './routes/AppRouter.jsx';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 function App() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ function App() {
       }
 
       try {
-        const response = await axios.get('http://localhost:3000/auth/verify', {
+        const response = await axios.get(`${API_URL}/auth/verify`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         console.log('Respuesta de /auth/verify:', response.data);

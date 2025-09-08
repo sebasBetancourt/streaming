@@ -5,7 +5,7 @@ import NetflixSearch from "../components/Search";
 import ItemDialog from "../components/ItemDialog";
 import CategorySection from "../components/CategorySection";
 
-const BACKEND_URL = "http://localhost:3000";
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function CategoriesPage() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);

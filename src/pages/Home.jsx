@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import ItemDialog from "../components/ItemDialog";
 import { use } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Home() {
   const [titles, setTitles] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -13,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     const fetchTitles = async () => {
       try {
-        const res = await fetch("http://localhost:3000/titles/list");
+        const res = await fetch(`${API_URL}/titles/list`);
         const data = await res.json();
 
         const mapped = data.map((t, i) => ({

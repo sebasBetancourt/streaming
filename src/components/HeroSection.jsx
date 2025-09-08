@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import ItemDialog from "./ItemDialog";
 import { data } from "react-router-dom";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export function HeroSection() {
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
@@ -29,7 +31,7 @@ export function HeroSection() {
 
   const pedirDatos = async () => {
     try {
-      const res = await fetch(`http://localhost:3000/titles/68b4f2fe718e64204c2260fb`);
+      const res = await fetch(`${API_URL}/titles/68b4f2fe718e64204c2260fb`);
       const datosUser = await res.json();
       return {
         id: datosUser._id,

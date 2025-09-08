@@ -16,6 +16,8 @@ import axios from "axios";
 import { useShelfItem } from "../hooks/useLocalShelf";
 import { useBodyScrollLock } from "../hooks/useScrollLock";
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function ItemDialog({
   user,
   open,
@@ -62,7 +64,7 @@ export default function ItemDialog({
     try {
       const id = item.id || item._id;
       const { data } = await axios.get(
-        `http://localhost:3000/reviews/list?titleId=${id}`
+        `${API_URL}/reviews/list?titleId=${id}`
       );
       setComments(data || []);
     } catch (err) {
@@ -77,7 +79,7 @@ export default function ItemDialog({
       try {
         const id = item.id || item._id;
         const { data } = await axios.get(
-          `http://localhost:3000/titles/${id}`
+          `${API_URL}/titles/${id}`
         );
         setFullItem({
           ...data,
@@ -106,7 +108,7 @@ export default function ItemDialog({
       try {
         const id = item.id || item._id;
         const { data } = await axios.get(
-          `http://localhost:3000/reviews/ranking/${id}`
+          `${API_URL}/reviews/ranking/${id}`
         );
         setRanking(data.ranking || 0);
       } catch (err) {
@@ -128,7 +130,7 @@ export default function ItemDialog({
 
     try {
       const { data: savedReview } = await axios.post(
-        "http://localhost:3000/reviews/create",
+        `${API_URL}/reviews/create`,
         newComment,
         {
           headers: {
@@ -152,7 +154,7 @@ export default function ItemDialog({
   const handleLike = async (id) => {
     try {
       await axios.put(
-        `http://localhost:3000/reviews/like/${id}`,
+        `${API_URL}/reviews/like/${id}`,
         {},
         {
           headers: {
@@ -169,7 +171,7 @@ export default function ItemDialog({
   const handleDislike = async (id) => {
     try {
       await axios.put(
-        `http://localhost:3000/reviews/dislike/${id}`,
+        `${API_URL}/reviews/dislike/${id}`,
         {},
         {
           headers: {
