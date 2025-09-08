@@ -107,9 +107,9 @@ export default function NetflixSearch({ onClose }) {
           {!loading && error && <div className="opacity-70">Error: {error}</div>}
           {!loading && !error && results.length === 0 && <div className="opacity-60 mt-4">No se encontraron resultados</div>}
           {!loading && !error && results.length > 0 && (
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-6 mt-4">
+            <div className="flex flex-wrap gap-8 justify-center mt-4">
               {results.map((item) => (
-                <div key={item._id} className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-[#141414]">
+                <div key={item._id} className="group relative aspect-[2/3] overflow-hidden rounded-lg bg-[#141414] h-60 w-40 rounded-md md:h-84 md:w-64">
                   <div
                     className="absolute inset-0 bg-center bg-cover"
                     style={{
@@ -118,7 +118,7 @@ export default function NetflixSearch({ onClose }) {
                   />
                   <div className="absolute inset-x-0 bottom-0">
                     <div className="h-24 bg-gradient-to-t from-black/80 to-transparent"></div>
-                    <div className="px-2 pb-2">
+                    <div className="px-2 pb-2 bg-gray-900">
                       <div className="line-clamp-1 text-sm opacity-95 text-white">{item.title}</div>
                       <div className="text-[11px] opacity-60 text-white">{item.type}</div>
                       <div className="text-[11px] opacity-60 text-white">{item.author}</div>

@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import NetflixSearch from "./Search";
 import { useNavigate } from "react-router-dom";
+import { useFetch } from "../hooks/useFetch";
+import { getCategories } from "../api/categories";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,6 +16,10 @@ export function Header() {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
+
+  const { data: categories = [], loading: catLoading, error: catError } = useFetch(getCategories, { limit: 40 });
+
+  
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -56,36 +62,24 @@ export function Header() {
                   Categorías
                 </button>
                 {/* Dropdown Menu */}
-                <div className="absolute left-0 top-full mt-2 w-56 bg-black/95 border border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 rounded shadow-lg">
-                  <div className="p-3 space-y-3">
-                    {/* Películas */}
-                    <div>
-                      <h4 className="text-white font-semibold text-sm mb-1">Películas</h4>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Acción</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Comedia</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Drama</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Terror</a>
-                      <hr className="border-gray-700 mt-2" />
-                    </div>
-                    {/* Series */}
-                    <div>
-                      <h4 className="text-white font-semibold text-sm mb-1">Series</h4>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Ciencia Ficción</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Misterio</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Thriller</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Documentales</a>
-                      <hr className="border-gray-700 mt-2" />
-                    </div>
-                    {/* Anime */}
-                    <div>
-                      <h4 className="text-white font-semibold text-sm mb-1">Anime</h4>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Shonen</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Shojo</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Seinen</a>
-                      <a href="#" className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm">Isekai</a>
+                <div className="absolute left-0 top-full mt-2 w-[600px] bg-black/95 border border-gray-800 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 rounded shadow-lg">
+                  <div className="p-3">
+                    <h4 className="text-white font-semibold text-sm mb-2">Categorías</h4>
+                    <hr className="border-gray-700 mt-1 mb-2 w-19"/>
+                    <div className="grid grid-cols-3 gap-2">
+                      {categories?.map(c => (
+                        <a 
+                          key={c._id} 
+                          href="#" 
+                          className="block px-3 py-1 text-gray-300 hover:bg-gray-800 rounded text-sm"
+                        >
+                          {c.name}
+                        </a>
+                      ))}
                     </div>
                   </div>
                 </div>
+
               </div>
               <button
                 onClick={() => navigate("/favorites")}
