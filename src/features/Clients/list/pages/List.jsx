@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Plus, Check, Filter, Image as ImageIcon, Upload as UploadIcon, Plus as Add, X } from "lucide-react";
-import ItemDialog from "../components/ItemDialog";
-import { useFetch } from "../hooks/useFetch";
-import { createTitle, getTitles, getTitlesList } from "../api/titles";
-import { getCategories } from "../api/categories";
+import ItemDialog from "@/shared/components/ItemDialog";
+import { useFetch } from "@/shared/hooks/useFetch.js";
+import { createTitle, getTitles, getTitlesList } from "@/shared/api/titles.js";
+import { getCategories } from "@/shared/api/categories.js";
 
 const GENRES = {
   movie: ["Acción", "Comedia", "Drama", "Romance", "Terror", "Fantasía", "Ciencia ficción", "Aventura"],

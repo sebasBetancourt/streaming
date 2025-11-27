@@ -3,7 +3,7 @@ import {
   User, Mail, Phone, MapPin, Image as ImageIcon, Upload as UploadIcon,
   Eye, EyeOff, Lock, LogOut, Download, Trash2, Shield, Bell, Check
 } from "lucide-react";
-import { Footer } from "../components/Footer";
+import { Footer } from "@/shared/components/Footer";
 
 function useAuthToken() {
   return (typeof window !== "undefined" && localStorage.getItem("access_token")) || "";
@@ -86,9 +86,9 @@ export default function AccountPage() {
           createdAt: data.createdAt || prev.createdAt,
         }));
         setPrefs({
-          marketingEmails: !!data?.preferences?.marketingEmails ?? false,
+          marketingEmails: data?.preferences?.marketingEmails ?? false,
           personalizedRecs: data?.preferences?.personalizedRecs !== false, // default ON
-          shareAnonymized: !!data?.preferences?.shareAnonymized ?? false,
+          shareAnonymized: data?.preferences?.shareAnonymized ?? false,
           dataRetentionMonths: Number(data?.preferences?.dataRetentionMonths || 12),
         });
         setPreview(data.avatar || "");

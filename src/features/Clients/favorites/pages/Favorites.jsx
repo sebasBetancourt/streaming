@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Heart, Filter, SortAsc, Search as SearchIcon, Info } from "lucide-react";
-import NetflixSearch from "../components/Search"; 
+import NetflixSearch from "@/shared/components/Search"; 
 
 // Géneros por tipo
 const GENRES = {

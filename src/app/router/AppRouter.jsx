@@ -1,14 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext.jsx';
+import { useAuth } from '../providers/AuthContext.jsx';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Login from '../pages/Login.jsx';
-import Home from '../pages/Home.jsx';
-import Admin from '../pages/Admin.jsx';
-import CategoriesPage from '../pages/Categories.jsx';
-import FavoritesPage from '../pages/Favorites.jsx';
-import MyListPage from '../pages/List.jsx';
-import ProfilePage from '../pages/Profile.jsx';
+import Login from '@/features/auth/pages/Login.jsx';
+import Home from '@/features/Clients/pages/Home.jsx';
+import Admin from '@/features/Admin/pages/Admin.jsx';
+import CategoriesPage from '@/features/Clients/categories/pages/Categories.jsx';
+import FavoritesPage from '@/features/Clients/favorites/pages/Favorites.jsx';
+import MyListPage from '@/features/Clients/list/pages/List.jsx';
+import ProfilePage from '@/features/Clients/profile/pages/Profile.jsx';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const PrivateRoute = ({ children, role }) => {
   const { user, logout } = useAuth();

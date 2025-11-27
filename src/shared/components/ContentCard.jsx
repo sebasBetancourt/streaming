@@ -1,6 +1,6 @@
 import { Play, Plus, ChevronDown, Heart, Check } from "lucide-react";
 import { useState } from "react";
-import { useShelfItem } from "../hooks/useLocalShelf";
+import { useShelfItem } from "@/shared/hooks/useLocalShelf";
 import ItemDialog from "./ItemDialog";
 
 export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy }) {

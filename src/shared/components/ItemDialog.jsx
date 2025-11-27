@@ -13,8 +13,8 @@ import {
   HeartOff,
 } from "lucide-react";
 import axios from "axios";
-import { useShelfItem } from "../hooks/useLocalShelf";
-import { useBodyScrollLock } from "../hooks/useScrollLock";
+import { useShelfItem } from "@/shared/hooks/useLocalShelf";
+import { useBodyScrollLock } from "@/shared/hooks/useScrollLock";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 

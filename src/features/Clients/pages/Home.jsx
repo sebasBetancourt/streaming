@@ -1,9 +1,9 @@
-import { Header } from "../components/Header";
-import { HeroSection } from "../components/HeroSection";
-import { ContentRow } from "../components/ContentRow";
-import { Footer } from "../components/Footer";
+import { Header } from "@/shared/components/Header";
+import { HeroSection } from "@/shared/components/HeroSection";
+import { ContentRow } from "@/shared/components/ContentRow";
+import { Footer } from "@/shared/components/Footer";
 import { useState, useEffect } from "react";
-import ItemDialog from "../components/ItemDialog";
+import ItemDialog from "@/shared/components/ItemDialog";
 import { use } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';

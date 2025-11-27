@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext.jsx";
+import { useAuth } from "../../../app/providers/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { Footer } from "../components/Footer.jsx";
-import { register, login } from "../api/auth.js";
+import { Footer } from "../../../shared/components/Footer.jsx";
+import { register, login } from "../../../shared/api/auth.js";
 
 export default function Login() {
   const { login: authLogin, user } = useAuth();

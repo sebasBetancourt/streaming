@@ -1,9 +1,8 @@
-// src/App.jsx
 import { useEffect } from 'react';
-import { useAuth } from './context/AuthContext.jsx';
+import { useAuth } from '@/app/providers/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import AppRouter from './routes/AppRouter.jsx';
+import AppRouter from '@/app/router/AppRouter.jsx';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 

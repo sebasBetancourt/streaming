@@ -17,8 +17,8 @@ import {
   ThumbsUp,
   ThumbsDown,
 } from "lucide-react";
-import NetflixSearch from "../components/Search";
-import { useAuth } from "../context/AuthContext";
+import NetflixSearch from "@/shared/components/Search";
+import { useAuth } from "@/app/providers/AuthContext";
 import { useNavigate } from "react-router-dom";
 // ====================== Helpers ======================
 function useAuthToken() {

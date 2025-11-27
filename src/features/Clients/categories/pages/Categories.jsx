@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { Footer } from "../components/Footer";
-import NetflixSearch from "../components/Search";
-import ItemDialog from "../components/ItemDialog";
-import CategorySection from "../components/CategorySection";
+import { Footer } from "@/shared/components/Footer.jsx";
+import NetflixSearch from "@/shared/components/Search";
+import ItemDialog from "@/shared/components/ItemDialog.jsx";
+import CategorySection from "@/shared/components/CategorySection.jsx";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 

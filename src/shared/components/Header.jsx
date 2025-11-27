@@ -1,10 +1,10 @@
 import { Search, User, Menu, X, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/app/providers/AuthContext";
 import NetflixSearch from "./Search";
 import { useNavigate } from "react-router-dom";
-import { useFetch } from "../hooks/useFetch";
-import { getCategories } from "../api/categories";
+import { useFetch } from "@/shared/hooks/useFetch";
+import { getCategories } from "@/shared/api/categories";
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
