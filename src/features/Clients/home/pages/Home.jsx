@@ -1,4 +1,4 @@
-import { HeroSection } from "@/shared/components/HeroSection";
+import { HeroSection } from "../components/HeroSection/HeroSection";
 import { Footer } from "@/shared/components/Footer";
 import ItemDialog from "@/shared/components/ItemDialog";
 

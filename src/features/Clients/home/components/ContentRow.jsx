@@ -4,7 +4,7 @@ import { ScrollArea } from "@/shared/components/ui/scroll-area";
 export function ContentRow({ id, title, items, showRank = false }) {
   return (
     <div id={id} className="mb-8 scroll-mt-24">
-      <h2 className="px-4 text-xl font-semibold text-white md:px-12 md:text-2xl">{title}</h2>
+      <h2 className="px-4 py-4 text-xl font-semibold text-white md:px-12 md:text-2xl">{title}</h2>
 
       <div className="px-4 md:px-12">
         <ScrollArea className="w-full">
