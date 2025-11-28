@@ -6,17 +6,17 @@ export default function MobileNav({ navigate }) {
       <a href="#Explore" className="hover:text-gray-400">Explorar</a>
       <a href="#Ranking" className="hover:text-gray-400">Clasificaciones</a>
 
-      <button onClick={() => navigate("/categories")} className="hover:text-gray-400">
+      <Link to="/categories" className="hover:text-gray-400">
         Categorías
-      </button>
+      </Link>
 
-      <button onClick={() => navigate("/favorites")} className="hover:text-gray-400">
+      <Link to="/favorites" className="hover:text-gray-400">
         Favoritos
-      </button>
+      </Link>
 
-      <button onClick={() => navigate("/list")} className="hover:text-gray-400">
+      <Link to="/list" className="hover:text-gray-400">
         Mi Lista
-      </button>
+      </Link>
     </nav>
   );
 }
