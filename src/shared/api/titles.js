@@ -1,4 +1,5 @@
 import axios from "axios";
+import { api } from "@/app/apiClient";
 
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -45,3 +46,10 @@ export const getTitlesList = async ({ skip = 0, limit = 30, type } = {}) => {
     throw new Error(err.response?.data?.message || err.message);
   }
 };
+
+
+
+export async function fetchTitles() {
+  const res = await api.get("/titles/list");
+  return res.data;
+}

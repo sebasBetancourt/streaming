@@ -1,7 +1,7 @@
 import { Play, Plus, ChevronDown, Heart, Check } from "lucide-react";
 import { useState } from "react";
 import { useShelfItem } from "@/shared/hooks/useLocalShelf";
-import ItemDialog from "./ItemDialog";
+import ItemDialog from "@/shared/components/ItemDialog";
 
 export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy }) {
   const [imageError, setImageError] = useState(false);

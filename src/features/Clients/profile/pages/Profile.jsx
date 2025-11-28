@@ -236,26 +236,11 @@ export default function AccountPage() {
 
   // ==================== UI ====================
   return (
-    <div className="min-h-screen netflix-container">
+    <div className="min-h-screen netflix-container pt-20">
       {/* Header */}
 
       
-        {/* Header simple */}
-        <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-3 md:px-12">
-          <div className="flex items-center gap-6">
-            <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
-              PixelFlix
-            </a>
-            <div className="flex space-x-1">
-              <a href="/home" className="text-sm opacity-80 hover:text-gray-300">Home </a>
-              <span className="text-sm opacity-80"> / </span>
-              <a href="/profile" className="text-sm opacity-80 hover:text-gray-300">Cuenta</a>
-            </div>
-            <div className="text-xs ml-250 opacity-70 flex items-center gap-2">
-              <Shield className="w-4 h-4" /> Seguridad y datos
-            </div>
-          </div>
-        </div>
+        
 
 
       <main className="px-4 pb-16 pt-4 md:px-12">

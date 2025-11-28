@@ -51,36 +51,8 @@ export default function CategoriesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen netflix-container p-7">
-      {/* Header simple */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur py-4 mb-5">
-        <div className="flex items-center gap-6">
-          <a
-            href="/home"
-            className="text-xl font-semibold text-3xl md:text-4xl text-red-600"
-          >
-            PixelFlix
-          </a>
-          <div className="flex space-x-1">
-            <a href="/home" className="text-sm opacity-80 hover:text-gray-300">
-              Home
-            </a>
-            <span className="text-sm opacity-80"> / </span>
-            <a
-              href="/categorias"
-              className="text-sm opacity-80 hover:text-gray-300"
-            >
-              Categorías
-            </a>
-          </div>
-          <div className="flex flex-1 justify-end items-center" ref={searchRef}>
-            <Search
-              className="text-white w-5 h-5 cursor-pointer hover:text-gray-300 transition-colors"
-              onClick={() => setShowSearch(true)}
-            />
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen netflix-container p-7 pt-20">
+      
 
       {/* Secciones */}
       <main className="space-y-2">

@@ -180,16 +180,8 @@ export default function MyListPage() {
   }
 
   return (
-    <div className="min-h-screen netflix-container">
-      {/* Header */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-6 md:px-12">
-        <div className="flex items-center gap-6">
-          <a href="/home" className="text-red-600 text-4xl font-bold">PixelFlix</a>
-          <div className="flex gap-1 text-sm opacity-80">
-            <a href="/home" className="hover:text-gray-300">Home</a> / <span>Mi Lista</span>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen netflix-container pt-20">
+      
 
       {/* Crear nuevo */}
       <section className="px-4 pt-4 md:px-12">

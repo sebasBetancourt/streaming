@@ -1,5 +1,5 @@
 import { ContentCard } from "./ContentCard";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "@/shared/components/ui/scroll-area";
 
 export function ContentRow({ id, title, items, showRank = false }) {
   return (

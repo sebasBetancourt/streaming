@@ -13,7 +13,6 @@ function App() {
   useEffect(() => {
     const validateSession = async () => {
       const token = localStorage.getItem('token');
-      console.log('Validando sesión con token:', token); 
       if (!user || !token) {
         console.log('No hay usuario o token, cerrando sesión');
         logout();
@@ -25,7 +24,7 @@ function App() {
         const response = await axios.get(`${API_URL}/auth/verify`, {
           headers: { Authorization: `Bearer ${token}` }
         });
-        console.log('Respuesta de /auth/verify:', response.data);
+        console.log('Respuesta de Verificacion:', response.status);
       } catch (err) {
         console.error('Sesión inválida:', err);
         logout();

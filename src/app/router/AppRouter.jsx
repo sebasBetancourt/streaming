@@ -1,128 +1,56 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../providers/AuthContext.jsx';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import Login from '@/features/auth/pages/Login.jsx';
-import Home from '@/features/Clients/pages/Home.jsx';
-import Admin from '@/features/Admin/pages/Admin.jsx';
-import CategoriesPage from '@/features/Clients/categories/pages/Categories.jsx';
-import FavoritesPage from '@/features/Clients/favorites/pages/Favorites.jsx';
-import MyListPage from '@/features/Clients/list/pages/List.jsx';
-import ProfilePage from '@/features/Clients/profile/pages/Profile.jsx';
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-const PrivateRoute = ({ children, role }) => {
-  const { user, logout } = useAuth();
-  const [isValidating, setIsValidating] = useState(true);
-  const [isValid, setIsValid] = useState(false);
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "../providers/AuthContext";
+import PrivateRoute from "./PrivateRouter";
 
-  useEffect(() => {
-    const validateToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!user || !token) {
-        setIsValid(false);
-        setIsValidating(false);
-        return;
-      }
+import Login from "@/features/auth/pages/Login";
 
-      try {
-        await axios.get(`${API_URL}/auth/verify`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setIsValid(true);
-      } catch (err) {
-        console.error('Token inválido:', err);
-        logout();
-        setIsValid(false);
-      }
-      setIsValidating(false);
-    };
+import Home from "@/features/Clients/home/pages/Home";
+import CategoriesPage from "@/features/Clients/categories/pages/Categories";
+import FavoritesPage from "@/features/Clients/favorites/pages/Favorites";
+import MyListPage from "@/features/Clients/list/pages/List";
+import ProfilePage from "@/features/Clients/profile/pages/Profile";
 
-    validateToken();
-  }, [user, logout]);
+import Admin from "@/features/Admin/pages/Admin";
 
-  if (isValidating) {
-    return <div>Cargando...</div>;
-  }
-
-  if (!isValid) {
-    console.log('No user o token inválido, redirigiendo a /login');
-    return <Navigate to="/login" replace />;
-  }
-
-  if (role && user.role !== role) {
-    console.log(`Rol no coincide: esperado ${role}, actual ${user.role}`);
-    return <Navigate to="/home" replace />;
-  }
-
-  return children;
-};
+import ClientLayout from "@/layouts/ClientLayout/ClientLayout";
 
 export default function AppRouter() {
   const { user } = useAuth();
 
   return (
     <Routes>
+      {/* LOGIN */}
       <Route path="/login" element={<Login />} />
+
+      {/* REDIRECCIÓN INICIAL */}
       <Route
         path="/"
         element={
           !user ? (
             <Navigate to="/login" replace />
-          ) : user.role === 'admin' ? (
+          ) : user.role === "admin" ? (
             <Navigate to="/admin" replace />
           ) : (
             <Navigate to="/home" replace />
           )
         }
       />
-      <Route
-        path="/home"
-        element={
-          <PrivateRoute role="user">
-            <Home />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/categories"
-        element={
-          <PrivateRoute role="user">
-            <CategoriesPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/favorites"
-        element={
-          <PrivateRoute role="user">
-            <FavoritesPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/list"
-        element={
-          <PrivateRoute role="user">
-            <MyListPage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <PrivateRoute role="user">
-            <ProfilePage />
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/admin"
-        element={
-          <PrivateRoute role="admin">
-            <Admin />
-          </PrivateRoute>
-        }
-      />
+
+      {/* CLIENT LAYOUT */}
+      <Route element={<PrivateRoute role="user"><ClientLayout /></PrivateRoute>}>
+        <Route path="/home" element={<Home />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
+        <Route path="/list" element={<MyListPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
+
+      {/* ADMIN LAYOUT */}
+      <Route element={<PrivateRoute role="admin"></PrivateRoute>}>
+        <Route path="/admin" element={<Admin />} />
+      </Route>
+
+      {/* NOT FOUND */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

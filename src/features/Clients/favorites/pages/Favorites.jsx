@@ -95,28 +95,8 @@ export default function FavoritesPage() {
   }
 
   return (
-    <div className="min-h-screen netflix-container">
-      {/* Header */}
-      <div className="sticky top-0 z-30 bg-black/70 backdrop-blur px-4 py-6 md:px-12">
-        <div className="flex items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <a href="/home" className="text-xl font-semibold text-3xl md:text-4xl text-red-600">
-              PixelFlix
-            </a>
-            <div className="flex space-x-1">
-              <a href="/home" className="text-sm opacity-80 hover:text-gray-300">Home </a>
-              <span className="text-sm opacity-80"> / </span>
-              <a href="/favorites" className="text-sm opacity-80 hover:text-gray-300">Favoritos</a>
-            </div>
-          </div>
-          <div className="flex items-center gap-5">
-              <SearchIcon onClick={() => setShowSearch(true)} className="w-5 h-5 opacity-70" />
-            <div className="flex items-center gap-2 text-xs opacity-70">
-              <Filter className="w-4 h-4" /><span>Filtros</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen netflix-container pt-20">
+      
       {/* Filtros */}
       <div className="px-4 py-4 md:px-12 md:py-5">
         <div className="flex flex-wrap items-center gap-3">
