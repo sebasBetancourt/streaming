@@ -76,7 +76,7 @@ export default function Login() {
     setError("");
     try {
       const response = await login(formData);
-      console.log('Respuesta completa de login:', response);
+      
       if (!response.user) {
         throw new Error('No se recibió el objeto user en la respuesta del servidor');
       }

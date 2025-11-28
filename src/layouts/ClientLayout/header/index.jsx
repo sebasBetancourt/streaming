@@ -1,10 +1,12 @@
 import { Menu, X, Search, User } from "lucide-react";
-import NetflixSearch from "@/shared/components/Search";
+import NetflixSearch from "@/shared/components/Search/Search";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import ProfileMenu from "./ProfileMenu";
 import { useHeader } from "./useHeader";
 import { Link } from "react-router-dom";
+import ItemDialog from "@/shared/components/ItemDialog";
+import { useState } from "react";
 
 export function Header() {
   const {
@@ -18,6 +20,8 @@ export function Header() {
     logout,
     categories,
   } = useHeader();
+
+  const [selectedItem, setSelectedItem] = useState(null);
 
   return (
     <>
@@ -55,7 +59,24 @@ export function Header() {
         {isMobileMenuOpen && <MobileNav navigate={navigate} />}
       </header>
 
-      {showSearch && <NetflixSearch onClose={() => setShowSearch(false)} />}
+      {showSearch && (
+        <NetflixSearch
+          onClose={() => setShowSearch(false)}
+          onSelect={(item) => {
+            setShowSearch(false);    
+            setSelectedItem(item);    
+          }}
+        />
+      )}
+
+      {selectedItem && (
+        <ItemDialog
+          open={true}
+          item={selectedItem}
+          onClose={() => setSelectedItem(null)}
+        />
+      )}
+
     </>
   );
 }
