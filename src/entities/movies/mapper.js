@@ -17,5 +17,6 @@ export function mapMovie(raw, index) {
     categories: raw.categories || [],
     rank: index + 1,
     creator: raw.creator || "Desconocido",
+    embed_url: raw.embed_url,
   };
 }

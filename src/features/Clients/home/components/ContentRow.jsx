@@ -23,6 +23,7 @@ export function ContentRow({ id, title, items, showRank = false }) {
                   genres={item.categories}
                   creator={item.creator}
                   createdBy={item.createdBy}
+                  embed_url={item.embed_url}
                 />
               </div>
             ))}

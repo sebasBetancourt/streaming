@@ -1,6 +1,9 @@
 import { useState, useRef } from "react";
 import { Button } from "@/shared/components/ui/button";
 import ItemDialog from "@/shared/components/ItemDialog";
+import NetflixPlayerModal from "@/shared/components/NetflixPlayer";
+
+import { Link } from "react-router-dom";
 
 import { Play, Info } from "lucide-react";
 
@@ -8,10 +11,14 @@ import { HeroAudioToggle } from "./HeroAudioToggle";
 import { HeroContent } from "./HeroContent";
 
 import { useHeroItem } from "../../hooks/useHeroItem";
+import { Navigate } from "react-router-dom";
 
 export function HeroSection() {
   const { item } = useHeroItem();
   const [open, setOpen] = useState(false);
+
+  const [modalUrl, setModalUrl] = useState(null);
+
 
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef(null);
@@ -43,11 +50,16 @@ export function HeroSection() {
         onOpen={
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
+                onClick={() =>
+                  setModalUrl(
+                    "https://vimeus.com/e/serie?tmdb=110492&view_key=Bwiw1fr6erpQ5YXM4toCFqTLJ2w60HOWuqWuzpWYvg&se=1&ep=1&theme=red&selector=v2&autoplay=1"
+                  )
+                }
                 size="lg"
                 className="bg-white text-black hover:bg-gray-200 flex items-center gap-3 px-8 py-4 text-lg font-semibold transition-all duration-200 hover:scale-105 rounded-md"
               >
-                <Play className="w-6 h-6 fill-current" />
-                Ver
+                  <Play className="w-6 h-6 fill-current" />
+                  Ver
               </Button>
 
               <Button
@@ -65,6 +77,11 @@ export function HeroSection() {
 
       {/* Dialog */}
       <ItemDialog open={open} onClose={() => setOpen(false)} item={item} />
+
+        {/* Modal */}
+      {modalUrl && (
+        <NetflixPlayerModal url={modalUrl} onClose={() => setModalUrl(null)} />
+      )}
     </div>
   );
 }

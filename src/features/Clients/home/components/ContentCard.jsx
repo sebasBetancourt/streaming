@@ -2,10 +2,19 @@ import { Play, Plus, ChevronDown, Heart, Check } from "lucide-react";
 import { useState } from "react";
 import { useShelfItem } from "@/shared/hooks/useLocalShelf";
 import ItemDialog from "@/shared/components/ItemDialog";
+import NetflixPlayerModal from "@/shared/components/NetflixPlayer";
 
-export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy }) {
+export function ContentCard({ id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy, embed_url }) {
   const [imageError, setImageError] = useState(false);
   const [open, setOpen] = useState(false);
+
+
+  
+  
+  
+  
+
+  const [modalUrl, setModalUrl] = useState(null);
 
   const item = { id, title, image, year, rating, duration, rank, description, type, genres, creator, createdBy };
   const { inList, isFav, toggleList, toggleFav } = useShelfItem(item);
@@ -48,9 +57,15 @@ export function ContentCard({ id, title, image, year, rating, duration, rank, de
 
               <div className="mb-3 flex items-center space-x-2">
                 <button
+                  onClick={() => {
+                    setOpen(false);
+                    setModalUrl(
+                      embed_url
+                    );
+                    
+                  }}
                   className="rounded-full bg-white p-2 text-black transition-colors hover:bg-gray-200"
                   title="Reproducir"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <Play className="h-3 w-3" />
                 </button>
@@ -92,8 +107,9 @@ export function ContentCard({ id, title, image, year, rating, duration, rank, de
         </div>
       </div>
 
-      {/* diálogo */}
-      <ItemDialog open={open} onClose={() => setOpen(false)} item={item} />
+      {modalUrl && <NetflixPlayerModal url={modalUrl} onClose={() => setModalUrl(null)} />}
+      {!modalUrl && <ItemDialog open={open} onClose={() => setOpen(false)} item={item} />}
+
     </>
   );
 }

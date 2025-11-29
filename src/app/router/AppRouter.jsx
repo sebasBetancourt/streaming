@@ -9,6 +9,7 @@ import CategoriesPage from "@/features/Clients/categories/pages/Categories";
 import FavoritesPage from "@/features/Clients/favorites/pages/Favorites";
 import MyListPage from "@/features/Clients/list/pages/List";
 import ProfilePage from "@/features/Clients/profile/pages/Profile";
+import NetflixPlayer from "@/shared/components/NetflixPlayer";
 
 import Admin from "@/features/Admin/pages/Admin";
 
@@ -43,7 +44,10 @@ export default function AppRouter() {
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/list" element={<MyListPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        
       </Route>
+
+      
 
       {/* ADMIN LAYOUT */}
       <Route element={<PrivateRoute role="admin"></PrivateRoute>}>

@@ -7,7 +7,7 @@ export async function getHeroItem() {
 
   const randomId = titles[randomIndex]._id;
 
-  const heroItem = await fetchHeroItem(randomId);
+  const heroItem = await fetchHeroItem("68b4f29e718e64204c2260ef");
 
   return heroItem;
 }

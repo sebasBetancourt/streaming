@@ -15,6 +15,7 @@ import {
 import axios from "axios";
 import { useShelfItem } from "@/shared/hooks/useLocalShelf";
 import { useBodyScrollLock } from "@/shared/hooks/useScrollLock";
+import NetflixPlayerModal from "./NetflixPlayer";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -29,6 +30,8 @@ export default function ItemDialog({
 
 
   const [starRating, setStarRating] = useState(0);
+
+  const [modalUrl, setModalUrl] = useState(null);
 
   const StarRating = ({ starRating, setStarRating }) => {
     return (
@@ -95,6 +98,7 @@ export default function ItemDialog({
           author: data.author || "Desconocido",
           likes: data.likes,
           dislikes: data.dislikes,
+          embed_url: data.embed_url,
         });
       } catch (err) {
         console.error("Error cargando item completo:", err);
@@ -257,8 +261,13 @@ export default function ItemDialog({
     author,
     likes, 
     dislikes,
+    embed_url,
   } = fullItem;
   const match = rating ? `${Math.round(parseFloat(rating) * 10)}% Match` : null;
+
+  console.log(embed_url);
+  
+  
 
   const modal = (
     <div className="fixed inset-0 z-[100]">
@@ -293,7 +302,13 @@ export default function ItemDialog({
             </div>
 
             <div className="mt-3 flex items-center gap-2">
-              <button className="rounded-md bg-white px-4 py-2 font-semibold text-black transition hover:bg-gray-200">
+              <button 
+                onClick={() =>
+                  setModalUrl(
+                    embed_url
+                  )
+                } 
+                className="rounded-md bg-white px-4 py-2 font-semibold text-black transition hover:bg-gray-200">
                 <span className="flex items-center gap-2"><Play className="h-4 w-4" /> Reproducir</span>
               </button>
               <button
@@ -491,6 +506,10 @@ export default function ItemDialog({
           </div>
         </div>
       </div>
+
+      {modalUrl && (
+        <NetflixPlayerModal url={modalUrl} onClose={() => setModalUrl(null)} />
+      )}
     </div>
   );
 

@@ -12,4 +12,5 @@
  * @property {string[]} categories
  * @property {number} rank
  * @property {string} creator
+ * @property {string} embed_url
  */
