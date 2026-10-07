@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
+import ForgotPassword from "@/features/auth/pages/ForgotPassword";
 import Login from "@/features/auth/pages/Login";
+import ResetPassword from "@/features/auth/pages/ResetPassword";
 import Admin from "@/features/Admin/pages/Admin";
 import CategoriesPage from "@/features/Clients/categories/pages/Categories";
 import FavoritesPage from "@/features/Clients/favorites/pages/Favorites";
@@ -16,6 +18,8 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={user ? <Navigate to="/" replace /> : <ForgotPassword />} />
+      <Route path="/reset-password" element={user ? <Navigate to="/" replace /> : <ResetPassword />} />
 
       <Route
         path="/"

@@ -1,15 +1,29 @@
 import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/app/providers/AuthContext";
 import { login, register } from "@/shared/api/auth";
-import { Footer } from "@/shared/components/Footer";
+import {
+  AuthAlert,
+  AuthLayout,
+  authCardClass,
+  authInputClass,
+  authPrimaryButtonClass,
+  authSecondaryButtonClass,
+} from "../components/AuthLayout";
+
+/** Estado de navegación con el que otras pantallas (p. ej. restablecer contraseña) dejan un aviso. */
+export interface LoginLocationState {
+  notice?: string;
+}
 
 export default function Login() {
   const { login: authLogin, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState(() => (location.state as LoginLocationState | null)?.notice ?? "");
   const [showRegister, setShowRegister] = useState(false);
 
   const [registerData, setRegisterData] = useState({
@@ -34,6 +48,11 @@ export default function Login() {
       }
     }
   }, [user, navigate]);
+
+  // El aviso ya está en el estado local; se quita del historial para que no reaparezca al recargar.
+  useEffect(() => {
+    if (location.state) navigate(location.pathname, { replace: true, state: null });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openRegister = () => {
     setRegError("");
@@ -74,6 +93,7 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    setNotice("");
     try {
       const response = await login(formData);
       authLogin(response.user, response.token);
@@ -115,117 +135,77 @@ export default function Login() {
         name: "",
       });
       setFormData({ email: registerData.email, password: registerData.password });
-      setError("Registro exitoso. Por favor, inicia sesión.");
+      setError("");
+      setNotice("Registro exitoso. Por favor, inicia sesión.");
     } catch (err) {
       setRegError(err instanceof Error ? err.message : "Error al registrar usuario. Verifica los datos ingresados.");
     }
   };
 
   return (
-    <div id="Footer" className="bg-black text-white min-h-screen flex flex-col">
-      <div className="relative flex-1">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "url('https://assets.nflxext.com/ffe/siteui/vlv3/3e4bd046-85a3-40e1-842d-fa11cec84349/web/CO-es-20250818-TRIFECTA-perspective_783420e1-1a07-4c2a-9f3c-585857c3ec6c_large.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            zIndex: 0,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/70 z-10"></div>
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black to-transparent z-10"></div>
-        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black to-transparent z-10"></div>
+    <AuthLayout>
+      <form onSubmit={handleSubmit} className={authCardClass}>
+        <h2 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
 
-        <div className="absolute top-0 left-0 w-full flex justify-start z-20">
-          <a
-            href="#"
-            className="font-bold text-3xl md:text-5xl tracking-tight m-6 drop-shadow-lg"
-            style={{ color: "#e50914", textShadow: "0 2px 8px rgba(0,0,0,0.7)" }}
-          >
-            PixelFlix
-          </a>
+        {notice && <AuthAlert tone="success">{notice}</AuthAlert>}
+        {error && <AuthAlert tone="error">{error}</AuthAlert>}
+
+        <div className="mb-4">
+          <input
+            id="email"
+            type="email"
+            name="email"
+            placeholder="Email"
+            autoComplete="email"
+            onChange={handleChange}
+            value={formData.email}
+            required
+            className={authInputClass}
+          />
         </div>
 
-        <div className="relative z-20 flex items-center justify-center min-h-screen">
-          <form
-            onSubmit={handleSubmit}
-            className="w-[22rem] md:w-[24rem] rounded-2xl border border-white/10 bg-black/60 p-8 md:p-10 shadow-2xl backdrop-blur-md"
-          >
-            <h2 className="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-
-            {error && (
-              <div className="mb-4 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-red-300">
-                {error}
-              </div>
-            )}
-
-            <div className="mb-4">
-              <input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Email"
-                autoComplete="email"
-                onChange={handleChange}
-                value={formData.email}
-                required
-                className="w-full h-12 rounded-md border border-white/20 bg-white/10 px-4 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
-              />
-            </div>
-
-            <div className="mb-2">
-              <input
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Contraseña"
-                autoComplete="current-password"
-                onChange={handleChange}
-                value={formData.password}
-                required
-                className="w-full h-12 rounded-md border border-white/20 bg-white/10 px-4 text-white placeholder-white/50 outline-none transition focus:border-[#e50914]"
-              />
-            </div>
-
-            <div className="mb-4 flex items-center justify-between text-sm opacity-80">
-              <label className="flex items-center gap-2">
-                <input id="remember" type="checkbox" className="h-4 w-4" />
-                <span>Recuérdame</span>
-              </label>
-              <div className="hover:underline cursor-pointer">¿Necesitas ayuda?</div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full h-12 rounded-md bg-[#e50914] font-semibold transition hover:bg-[#f6121d] hover:shadow-[0_8px_24px_rgba(229,9,20,0.35)]"
-            >
-              Iniciar Sesión
-            </button>
-
-            <div className="my-5 flex items-center gap-3">
-              <div className="h-px flex-1 bg-white/15"></div>
-              <div className="text-sm opacity-70">O</div>
-              <div className="h-px flex-1 bg-white/15"></div>
-            </div>
-
-            <button
-              type="button"
-              className="w-full h-12 rounded-md border border-white/15 bg-white/[0.06] font-semibold transition hover:bg-white/[0.1]"
-              onClick={openRegister}
-            >
-              Regístrate
-            </button>
-
-            <div className="mt-6 text-xs opacity-70 leading-relaxed">
-              Autenticación basada en tokens (JWT) con expiración y rotación automática.
-            </div>
-          </form>
-
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent"></div>
+        <div className="mb-2">
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Contraseña"
+            autoComplete="current-password"
+            onChange={handleChange}
+            value={formData.password}
+            required
+            className={authInputClass}
+          />
         </div>
-      </div>
+
+        <div className="mb-4 flex items-center justify-between text-sm opacity-80">
+          <label className="flex items-center gap-2">
+            <input id="remember" type="checkbox" className="h-4 w-4" />
+            <span>Recuérdame</span>
+          </label>
+          <Link to="/forgot-password" className="hover:underline">
+            ¿Olvidaste tu contraseña?
+          </Link>
+        </div>
+
+        <button type="submit" className={authPrimaryButtonClass}>
+          Iniciar Sesión
+        </button>
+
+        <div className="my-5 flex items-center gap-3">
+          <div className="h-px flex-1 bg-white/15"></div>
+          <div className="text-sm opacity-70">O</div>
+          <div className="h-px flex-1 bg-white/15"></div>
+        </div>
+
+        <button type="button" className={authSecondaryButtonClass} onClick={openRegister}>
+          Regístrate
+        </button>
+
+        <div className="mt-6 text-xs opacity-70 leading-relaxed">
+          Autenticación basada en tokens (JWT) con expiración y rotación automática.
+        </div>
+      </form>
 
       {showRegister && (
         <div
@@ -374,8 +354,6 @@ export default function Login() {
           </div>
         </div>
       )}
-
-      <Footer className="bg-black" />
-    </div>
+    </AuthLayout>
   );
 }
