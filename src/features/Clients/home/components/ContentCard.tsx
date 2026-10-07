@@ -11,7 +11,7 @@ interface Props {
 }
 
 export function ContentCard({ item, showRank = false }: Props) {
-  const { title, image, year, ratingAvg, duration, rank, description, embedUrl } = item;
+  const { title, backdrop: image, year, ratingAvg, duration, rank, description, embedUrl } = item;
   const [imageError, setImageError] = useState(false);
   const [open, setOpen] = useState(false);
   const [playerUrl, setPlayerUrl] = useState<string | null>(null);
@@ -51,17 +51,27 @@ export function ContentCard({ item, showRank = false }: Props) {
               <h3 className="mb-1 line-clamp-1 text-sm font-semibold leading-tight text-white sm:text-base md:text-lg">{title}</h3>
 
               <div className="mb-3 flex items-center space-x-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (embedUrl) setPlayerUrl(embedUrl);
-                    else setOpen(true);
-                  }}
-                  className="rounded-full bg-white p-2 text-black transition-colors hover:bg-gray-200"
-                  title={embedUrl ? "Reproducir" : "Sin reproductor disponible"}
-                >
-                  <Play className="h-3 w-3" />
-                </button>
+                {embedUrl ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPlayerUrl(embedUrl);
+                    }}
+                    className="rounded-full bg-white p-2 text-black transition-colors hover:bg-gray-200"
+                    title="Reproducir"
+                    aria-label={`Reproducir ${title}`}
+                  >
+                    <Play className="h-3 w-3" />
+                  </button>
+                ) : (
+                  <button
+                    disabled
+                    onClick={(e) => e.stopPropagation()}
+                    className="cursor-not-allowed rounded-full bg-white/60 px-3 py-1 text-xs font-semibold text-black"
+                  >
+                    No disponible
+                  </button>
+                )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

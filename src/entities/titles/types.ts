@@ -17,6 +17,8 @@ export interface TitleDto {
   tmdbId: number | null;
   imdbId: string | null;
   embedUrl: string | null;
+  backdropUrl: string | null;
+  quality: string | null;
   ratingAvg: number;
   ratingCount: number;
   likes: number;
@@ -37,6 +39,9 @@ export interface TitleEntity {
   year: number | null;
   image: string;
   posterUrl: string | null;
+  /** Imagen horizontal (16:9) si existe; si no, el póster. */
+  backdrop: string;
+  quality: string | null;
   /** Promedio con un decimal, p. ej. "4.5". */
   ratingAvg: string;
   duration: string;

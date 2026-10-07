@@ -13,7 +13,7 @@ import TitleGrid from "../src/features/Clients/categories/components/TitleGrid";
 const dto = (id: string, extra: Partial<TitleDto> = {}): TitleDto => ({
   id, type: "movie", title: `Peli ${id}`, description: "", author: null, year: 2020, seasons: null, episodes: null,
   posterUrl: `https://img/${id}.jpg`, images: [], status: "approved", tmdbId: null, imdbId: null, embedUrl: null,
-  ratingAvg: 0, ratingCount: 0, likes: 0, dislikes: 0, createdById: null, createdAt: "2025-01-01", categories: [],
+  backdropUrl: null, quality: null, ratingAvg: 0, ratingCount: 0, likes: 0, dislikes: 0, createdById: null, createdAt: "2025-01-01", categories: [],
   creator: null, ...extra,
 });
 
