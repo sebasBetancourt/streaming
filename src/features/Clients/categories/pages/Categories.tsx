@@ -3,21 +3,21 @@ import type { TitleEntity } from "@/entities/titles";
 import { getCategorySummary } from "@/shared/api/categories";
 import { Footer } from "@/shared/components/Footer";
 import ItemDialog from "@/shared/components/ItemDialog";
+import SearchInput from "@/shared/components/SearchInput";
 import { useAsync } from "@/shared/hooks/useAsync";
-import { titlesLabel } from "../components/CategoryCard";
 import CategoryCardsRow from "../components/CategoryCardsRow";
 import CategoryResults from "../components/CategoryResults";
 import EmptyState, { emptyStateButtonClass, emptyStatePrimaryButtonClass } from "../components/EmptyState";
 import GenreRows from "../components/GenreRows";
 import SortSelect from "../components/SortSelect";
 import TypeTabs, { TYPE_OPTIONS, allTitlesLabel } from "../components/TypeTabs";
-import { ALL_CATEGORY, useCategoryFilters } from "../hooks/useCategoryFilters";
+import { ALL_CATEGORY, MAX_SEARCH, useCategoryFilters } from "../hooks/useCategoryFilters";
 
 const SUGGESTIONS = 4;
 
 export default function CategoriesPage() {
-  const { filters, setType, setCategory, setSort } = useCategoryFilters();
-  const { type, categoryId, sort } = filters;
+  const { filters, setType, setCategory, setSort, setSearch, setPage } = useCategoryFilters();
+  const { type, categoryId, sort, search, page } = filters;
   const summary = useAsync((signal) => getCategorySummary(type, signal), [type]);
   const categories = summary.data ?? [];
   const category = categories.find((c) => c.id === categoryId);
@@ -31,8 +31,21 @@ export default function CategoriesPage() {
     </button>
   ));
 
+  const resultsProps = { type, sort, search, page, onPageChange: setPage, onSelectItem: setSelected };
+
+  const searchOnly = !!search && !categoryId;
+
   let content;
-  if (summary.error) {
+  if (categoryId === ALL_CATEGORY || searchOnly) {
+    // No depende del resumen de géneros: buscar funciona aunque ese resumen falle.
+    content = (
+      <CategoryResults
+        title={searchOnly ? `Resultados en ${allTitlesLabel(type).toLowerCase()}` : allTitlesLabel(type)}
+        {...resultsProps}
+        onClear={() => (searchOnly ? setSearch("") : setCategory(undefined))}
+      />
+    );
+  } else if (summary.error) {
     content = (
       <EmptyState tone="error" title="No se pudieron cargar las categorías" description={summary.error.message}>
         <button type="button" onClick={summary.reload} className={emptyStatePrimaryButtonClass}>
@@ -40,27 +53,13 @@ export default function CategoriesPage() {
         </button>
       </EmptyState>
     );
-  } else if (categoryId === ALL_CATEGORY) {
-    content = (
-      <CategoryResults
-        title={allTitlesLabel(type)}
-        subtitle="Todos los géneros"
-        type={type}
-        sort={sort}
-        onClear={() => setCategory(undefined)}
-        onSelectItem={setSelected}
-      />
-    );
   } else if (categoryId && (summary.loading || category)) {
     content = (
       <CategoryResults
         categoryId={categoryId}
         title={category?.name ?? "Categoría"}
-        subtitle={category ? titlesLabel(category.count) : "Cargando..."}
-        type={type}
-        sort={sort}
+        {...resultsProps}
         onClear={() => setCategory(undefined)}
-        onSelectItem={setSelected}
       />
     );
   } else if (categoryId) {
@@ -84,7 +83,16 @@ export default function CategoriesPage() {
         <h1 className="text-3xl font-bold md:text-4xl">Explorar</h1>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <TypeTabs value={type} onChange={setType} />
-          <SortSelect value={sort} onChange={setSort} />
+          <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto">
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              label="Buscar por nombre"
+              placeholder="Buscar por nombre…"
+              maxLength={MAX_SEARCH}
+            />
+            <SortSelect value={sort} onChange={setSort} />
+          </div>
         </div>
       </header>
 

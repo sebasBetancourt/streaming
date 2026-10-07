@@ -35,7 +35,7 @@ export function useInfiniteTitles({ type, categoryId, sort }: Query, pageSize = 
       busy.current = true;
       setState((s) => ({ ...s, loading: true, error: null }));
       try {
-        const page = (await listTitles({ type, categoryId, sort, skip, limit: pageSize }, ctrl.signal)).map(mapTitle);
+        const page = (await listTitles({ type, categoryId, sort, skip, limit: pageSize }, ctrl.signal)).items.map(mapTitle);
         if (id !== requestId.current) return;
         setState((s) => {
           const prev = skip === 0 ? [] : s.items;

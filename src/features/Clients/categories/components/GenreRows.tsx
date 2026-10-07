@@ -59,7 +59,7 @@ function GenreRow({ categoryId, name, type, sort, onSeeAll, onSelectItem }: RowP
   const { data, loading, error, reload } = useAsync(
     (signal) =>
       near
-        ? listTitles({ type, categoryId, sort, limit: ROW_SIZE }, signal).then((r) => r.map(mapTitle))
+        ? listTitles({ type, categoryId, sort, limit: ROW_SIZE }, signal).then((r) => r.items.map(mapTitle))
         : Promise.resolve(null),
     [near, type, categoryId, sort],
   );

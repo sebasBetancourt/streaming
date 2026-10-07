@@ -59,7 +59,9 @@ describe("CategoryCard", () => {
 
 describe("GenreRows", () => {
   it("empieza con una fila de todos los títulos del tipo, también los que no tienen género", async () => {
-    listTitles.mockImplementation(async ({ categoryId }: { categoryId?: string }) => [dto(categoryId ?? "sin-genero")]);
+    listTitles.mockImplementation(async ({ categoryId }: { categoryId?: string }) => ({
+      items: [dto(categoryId ?? "sin-genero")], total: 1,
+    }));
     const onSeeAll = vi.fn();
     const category = { id: "c1", name: "Acción", count: 1, posterUrl: null };
     render(<GenreRows categories={[category]} type="tv" sort="popular" onSeeAll={onSeeAll} onSelectItem={vi.fn()} />);
