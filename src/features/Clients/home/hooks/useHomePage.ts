@@ -15,7 +15,7 @@ export function useHomePage() {
     // Una petición por tipo: con una sola lista mezclada, series y anime quedarían casi vacíos.
     Promise.all(TYPES.map((type) => listTitles({ type, limit: ROW_SIZE }, controller.signal)))
       .then(([movie, tv, anime]) =>
-        setByType({ movie: movie.map(mapTitle), tv: tv.map(mapTitle), anime: anime.map(mapTitle) }),
+        setByType({ movie: movie.items.map(mapTitle), tv: tv.items.map(mapTitle), anime: anime.items.map(mapTitle) }),
       )
       .catch((e: unknown) => {
         if (!controller.signal.aborted) console.error("Error cargando títulos:", e);

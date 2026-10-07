@@ -26,13 +26,15 @@ import { createCategory as createCategoryApi, deleteCategory as deleteCategoryAp
 import { deleteReview as deleteReviewApi, listReviews } from "@/shared/api/reviews";
 import { adminListTitles, approveTitle as approveTitleApi, createTitle, deleteTitle as deleteTitleApi, rejectTitle as rejectTitleApi, setTitleEmbed, updateTitle } from "@/shared/api/titles";
 import NetflixSearch from "@/shared/components/Search/Search";
+import CatalogSyncPanel from "../components/CatalogSyncPanel";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 
-type Tab = "overview" | "titles" | "reviews" | "categories" | "users";
+type Tab = "overview" | "titles" | "catalog" | "reviews" | "categories" | "users";
 
 const TABS: [Tab, string][] = [
   ["overview", "Resumen"],
   ["titles", "Títulos"],
+  ["catalog", "Catálogo"],
   ["reviews", "Reseñas"],
   ["categories", "Categorías"],
   ["users", "Usuarios"],
@@ -576,6 +578,8 @@ export default function AdminPage() {
             )}
           </div>
         )}
+
+        {tab === "catalog" && <CatalogSyncPanel />}
 
         {/* ---------- REVIEWS ---------- */}
         {tab === "reviews" && (

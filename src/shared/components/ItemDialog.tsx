@@ -160,7 +160,7 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
 
   if (!open || !fullItem) return null;
 
-  const { title, image, year, ratingAvg, duration, description, type, categories, creator, author, likes, dislikes, embedUrl } = fullItem;
+  const { title, backdrop, year, ratingAvg, duration, description, type, categories, creator, author, likes, dislikes, embedUrl, quality } = fullItem;
   const rating = parseFloat(ratingAvg);
   const match = rating > 0 ? `${Math.round(rating * 10)}% Match` : null;
 
@@ -175,7 +175,7 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
         aria-label={`Detalles de ${title}`}
       >
         <div className="relative h-56 w-full md:h-80">
-          <div className="absolute inset-0 bg-center" style={{ backgroundImage: image ? `url(${image})` : undefined, backgroundSize: "cover" }} />
+          <div className="absolute inset-0 bg-center" style={{ backgroundImage: backdrop ? `url(${backdrop})` : undefined, backgroundSize: "cover" }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
           <button
             ref={closeBtnRef}
@@ -193,6 +193,7 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
               {year && <span className="rounded border border-white/20 px-1">{year}</span>}
               {duration && <span className="opacity-80">{duration}</span>}
               <span className="rounded border border-white/20 px-1 capitalize">{type}</span>
+              {quality && <span className="rounded border border-white/20 px-1">{quality}</span>}
               {categories.length > 0 && <span className="opacity-70">· {categories.slice(0, 3).join(", ")}</span>}
             </div>
 
@@ -200,11 +201,10 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
               <button
                 onClick={() => embedUrl && setPlayerUrl(embedUrl)}
                 disabled={!embedUrl}
-                title={embedUrl ? "Reproducir" : "Sin reproductor disponible"}
                 className="rounded-md bg-white px-4 py-2 font-semibold text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <span className="flex items-center gap-2">
-                  <Play className="h-4 w-4" /> Reproducir
+                  <Play className="h-4 w-4" /> {embedUrl ? "Reproducir" : "No disponible"}
                 </span>
               </button>
               <button

@@ -23,7 +23,7 @@ export function HeroSection() {
   return (
     <div className="relative mb-20 min-h-screen w-full overflow-hidden pt-20" style={{ minHeight: "calc(100vh - 64px)" }}>
       <div className="absolute inset-0">
-        {item?.image && <img src={item.image} alt="" className="h-full w-full object-cover" />}
+        {item?.backdrop && <img src={item.backdrop} alt="" className="h-full w-full object-cover" />}
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
       </div>

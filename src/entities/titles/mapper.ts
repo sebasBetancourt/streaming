@@ -15,6 +15,8 @@ export function mapTitle(raw: TitleDto, index = 0): TitleEntity {
     year: raw.year,
     image: raw.posterUrl ?? "",
     posterUrl: raw.posterUrl,
+    backdrop: raw.backdropUrl ?? raw.posterUrl ?? "",
+    quality: raw.quality ?? null,
     ratingAvg: Number.isFinite(rating) ? rating.toFixed(1) : "0.0",
     duration: formatDuration(raw),
     categories: raw.categories.map((c) => c.name),

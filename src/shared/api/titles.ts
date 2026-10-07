@@ -1,12 +1,16 @@
 import type { Page, TitleDto, TitleType } from "@/entities/titles";
 import { http } from "./client";
 
+export type TitleSort = "popular" | "rating" | "recent";
+
 export interface ListTitlesParams {
   skip?: number;
   limit?: number;
   type?: TitleType;
   categoryId?: string;
   search?: string;
+  /** Sin valor, el orden natural del backend (el del Home). */
+  sort?: TitleSort;
 }
 
 export interface CreateTitleInput {
@@ -27,8 +31,9 @@ export type UpdateTitleInput = Partial<Omit<CreateTitleInput, "posterUrl" | "sea
   episodes?: number | null;
 };
 
+/** Una página de títulos aprobados y el total de coincidencias (para paginar). */
 export const listTitles = (params: ListTitlesParams = {}, signal?: AbortSignal) =>
-  http.get<TitleDto[]>("/titles/list", { params, signal }).then((r) => r.data);
+  http.get<Page<TitleDto>>("/titles/list", { params, signal }).then((r) => r.data);
 
 export const listMyCollection = (params: { skip?: number; limit?: number; type?: TitleType } = {}) =>
   http.get<TitleDto[]>("/titles/list/collection", { params }).then((r) => r.data);

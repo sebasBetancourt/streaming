@@ -11,7 +11,7 @@ export function useHeroItem() {
     let cancelled = false;
     async function load() {
       try {
-        const raw = HERO_TITLE_ID ? await getTitle(HERO_TITLE_ID) : (await listTitles({ limit: 1 }))[0];
+        const raw = HERO_TITLE_ID ? await getTitle(HERO_TITLE_ID) : (await listTitles({ limit: 1 })).items[0];
         if (!cancelled && raw) setItem(mapTitle(raw));
       } catch (e) {
         console.error("No se pudo cargar el título destacado:", e);
