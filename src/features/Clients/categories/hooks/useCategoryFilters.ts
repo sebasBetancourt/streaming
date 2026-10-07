@@ -3,9 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import type { TitleType } from "@/entities/titles";
 import type { TitleSort } from "@/shared/api/titles";
 
+/** Valor de `category` que muestra todos los títulos del tipo, tengan género o no. */
+export const ALL_CATEGORY = "all";
+
 export interface CategoryFilters {
   /** Sin valor: todos los tipos. */
   type?: TitleType;
+  /** Id de una categoría o `ALL_CATEGORY`. */
   categoryId?: string;
   sort: TitleSort;
 }
@@ -22,7 +26,7 @@ export function parseFilters(params: URLSearchParams): CategoryFilters {
   const sort = params.get("sort") ?? "";
   return {
     type: TYPES.includes(type) ? (type as TitleType) : undefined,
-    categoryId: OBJECT_ID.test(category) ? category : undefined,
+    categoryId: OBJECT_ID.test(category) || category === ALL_CATEGORY ? category : undefined,
     sort: SORTS.includes(sort) ? (sort as TitleSort) : DEFAULT_SORT,
   };
 }

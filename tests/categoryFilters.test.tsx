@@ -22,6 +22,10 @@ describe("parseFilters / filtersToParams", () => {
     });
   });
 
+  it("acepta 'all' como categoría (todos los títulos del tipo)", () => {
+    expect(parseFilters(new URLSearchParams("type=anime&category=all")).categoryId).toBe("all");
+  });
+
   it("ignora valores desconocidos y usa 'popular' por defecto", () => {
     expect(parseFilters(new URLSearchParams("type=documental&category=abc&sort=azar"))).toEqual({
       type: undefined,

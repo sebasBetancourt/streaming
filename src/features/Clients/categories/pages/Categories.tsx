@@ -4,13 +4,14 @@ import { getCategorySummary } from "@/shared/api/categories";
 import { Footer } from "@/shared/components/Footer";
 import ItemDialog from "@/shared/components/ItemDialog";
 import { useAsync } from "@/shared/hooks/useAsync";
+import { titlesLabel } from "../components/CategoryCard";
 import CategoryCardsRow from "../components/CategoryCardsRow";
 import CategoryResults from "../components/CategoryResults";
 import EmptyState, { emptyStateButtonClass, emptyStatePrimaryButtonClass } from "../components/EmptyState";
 import GenreRows from "../components/GenreRows";
 import SortSelect from "../components/SortSelect";
-import TypeTabs, { TYPE_OPTIONS } from "../components/TypeTabs";
-import { useCategoryFilters } from "../hooks/useCategoryFilters";
+import TypeTabs, { TYPE_OPTIONS, allTitlesLabel } from "../components/TypeTabs";
+import { ALL_CATEGORY, useCategoryFilters } from "../hooks/useCategoryFilters";
 
 const SUGGESTIONS = 4;
 
@@ -39,24 +40,23 @@ export default function CategoriesPage() {
         </button>
       </EmptyState>
     );
-  } else if (!summary.loading && categories.length === 0) {
+  } else if (categoryId === ALL_CATEGORY) {
     content = (
-      <EmptyState
-        title={`Aún no hay ${typeLabel} con género asignado`}
-        description="Cuando se asignen géneros a estos títulos aparecerán aquí."
-      >
-        {type && (
-          <button type="button" onClick={() => setType(undefined)} className={emptyStatePrimaryButtonClass}>
-            Ver todo
-          </button>
-        )}
-      </EmptyState>
+      <CategoryResults
+        title={allTitlesLabel(type)}
+        subtitle="Todos los géneros"
+        type={type}
+        sort={sort}
+        onClear={() => setCategory(undefined)}
+        onSelectItem={setSelected}
+      />
     );
   } else if (categoryId && (summary.loading || category)) {
     content = (
       <CategoryResults
         categoryId={categoryId}
-        category={category}
+        title={category?.name ?? "Categoría"}
+        subtitle={category ? titlesLabel(category.count) : "Cargando..."}
         type={type}
         sort={sort}
         onClear={() => setCategory(undefined)}

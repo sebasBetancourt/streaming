@@ -1,25 +1,25 @@
 import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
-import type { CategorySummary } from "@/entities/categories";
 import type { TitleEntity, TitleType } from "@/entities/titles";
 import type { TitleSort } from "@/shared/api/titles";
 import { scrollBehavior } from "@/shared/lib/motion";
 import { useInfiniteTitles } from "../hooks/useInfiniteTitles";
-import { titlesLabel } from "./CategoryCard";
 import EmptyState, { emptyStateButtonClass } from "./EmptyState";
 import TitleGrid from "./TitleGrid";
 
 interface Props {
-  categoryId: string;
-  /** `undefined` mientras carga el resumen. */
-  category?: CategorySummary;
+  /** Sin categoría: todos los títulos del tipo. */
+  categoryId?: string;
+  title: string;
+  /** Línea bajo el título (p. ej. el conteo), anunciada al cambiar. */
+  subtitle: string;
   type?: TitleType;
   sort: TitleSort;
   onClear: () => void;
   onSelectItem: (item: TitleEntity) => void;
 }
 
-export default function CategoryResults({ categoryId, category, type, sort, onClear, onSelectItem }: Props) {
+export default function CategoryResults({ categoryId, title, subtitle, type, sort, onClear, onSelectItem }: Props) {
   const { items, loading, error, hasMore, loadMore, retry } = useInfiniteTitles({ type, categoryId, sort });
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -39,10 +39,10 @@ export default function CategoryResults({ categoryId, category, type, sort, onCl
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 id="category-results-heading" ref={headingRef} tabIndex={-1} className="scroll-mt-24 text-2xl font-semibold outline-none">
-            {category?.name ?? "Categoría"}
+            {title}
           </h2>
           <p aria-live="polite" className="text-sm text-white/75">
-            {category ? titlesLabel(category.count) : "Cargando..."}
+            {subtitle}
           </p>
         </div>
         <button type="button" onClick={onClear} className={`${emptyStateButtonClass} flex items-center gap-2`}>

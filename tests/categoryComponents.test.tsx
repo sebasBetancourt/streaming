@@ -6,8 +6,11 @@ import { mapTitle, type TitleDto } from "../src/entities/titles";
 vi.mock("@/app/providers/ShelfContext", () => ({
   useShelfItem: () => ({ inList: false, isFav: false, toggleList: vi.fn(), toggleFav: vi.fn() }),
 }));
+const listTitles = vi.hoisted(() => vi.fn());
+vi.mock("@/shared/api/titles", () => ({ listTitles }));
 
 import CategoryCard from "../src/features/Clients/categories/components/CategoryCard";
+import GenreRows from "../src/features/Clients/categories/components/GenreRows";
 import TitleGrid from "../src/features/Clients/categories/components/TitleGrid";
 
 const dto = (id: string, extra: Partial<TitleDto> = {}): TitleDto => ({
@@ -51,6 +54,26 @@ describe("CategoryCard", () => {
   it("usa singular con un solo título", () => {
     render(<CategoryCard category={{ ...category, count: 1 }} selected={false} onSelect={vi.fn()} />);
     expect(screen.getByText("1 título")).toBeTruthy();
+  });
+});
+
+describe("GenreRows", () => {
+  it("empieza con una fila de todos los títulos del tipo, también los que no tienen género", async () => {
+    listTitles.mockImplementation(async ({ categoryId }: { categoryId?: string }) => [dto(categoryId ?? "sin-genero")]);
+    const onSeeAll = vi.fn();
+    const category = { id: "c1", name: "Acción", count: 1, posterUrl: null };
+    render(<GenreRows categories={[category]} type="tv" sort="popular" onSeeAll={onSeeAll} onSelectItem={vi.fn()} />);
+    for (const o of observers) o.cb([{ isIntersecting: true } as IntersectionObserverEntry], {} as IntersectionObserver);
+
+    const headings = screen.getAllByRole("heading", { level: 2 }).map((h) => h.textContent);
+    expect(headings).toEqual(["Todas las series", "Acción"]);
+    expect(await screen.findByRole("button", { name: /^Peli sin-genero/ })).toBeTruthy();
+    expect(listTitles).toHaveBeenCalledWith(expect.objectContaining({ type: "tv", categoryId: undefined }), expect.anything());
+
+    fireEvent.click(screen.getByRole("button", { name: "Ver todas las series" }));
+    expect(onSeeAll).toHaveBeenCalledWith("all");
+    fireEvent.click(screen.getByRole("button", { name: "Ver todos los títulos de Acción" }));
+    expect(onSeeAll).toHaveBeenLastCalledWith("c1");
   });
 });
 

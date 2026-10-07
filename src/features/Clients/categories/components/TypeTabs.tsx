@@ -7,6 +7,14 @@ export const TYPE_OPTIONS: { value?: TitleType; label: string }[] = [
   { value: "anime", label: "Anime" },
 ];
 
+const ALL_TITLES_LABEL: Record<TitleType, string> = {
+  movie: "Todas las películas",
+  tv: "Todas las series",
+  anime: "Todo el anime",
+};
+
+export const allTitlesLabel = (type?: TitleType) => (type ? ALL_TITLES_LABEL[type] : "Todos los títulos");
+
 interface Props {
   value?: TitleType;
   onChange: (value?: TitleType) => void;
