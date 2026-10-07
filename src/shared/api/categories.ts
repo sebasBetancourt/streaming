@@ -1,8 +1,13 @@
-import type { Category } from "@/entities/categories";
+import type { Category, CategorySummary } from "@/entities/categories";
+import type { TitleType } from "@/entities/titles";
 import { http } from "./client";
 
 export const listCategories = (params: { skip?: number; limit?: number } = {}) =>
   http.get<Category[]>("/categories/list", { params }).then((r) => r.data);
+
+/** Solo categorías con títulos del tipo pedido (o de cualquiera), de más a menos títulos. */
+export const getCategorySummary = (type?: TitleType, signal?: AbortSignal) =>
+  http.get<CategorySummary[]>("/categories/summary", { params: { type }, signal }).then((r) => r.data);
 
 export const createCategory = (name: string) =>
   http.post<{ category: Category }>("/categories/create", { name }).then((r) => r.data.category);

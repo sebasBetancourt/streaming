@@ -1,5 +1,7 @@
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import type { TitleEntity } from "@/entities/titles";
+import { scrollBehavior } from "@/shared/lib/motion";
+import PosterCard from "./PosterCard";
 import ArrowButton from "./ui/ArrowButton";
 
 interface Props {
@@ -7,66 +9,43 @@ interface Props {
   items: TitleEntity[];
   loading: boolean;
   onSelectItem: (item: TitleEntity) => void;
+  /** Acción junto al título (p. ej. "Ver todo"). */
+  action?: ReactNode;
 }
 
-export default function Row({ title, items, loading, onSelectItem }: Props) {
-  const trackRef = useRef<HTMLDivElement>(null);
+const CELL = "w-32 flex-shrink-0 sm:w-36 md:w-44";
 
-  const scrollAmt = () => Math.round((trackRef.current?.clientWidth ?? 0) * 0.9);
-  const left = () => trackRef.current?.scrollBy({ left: -scrollAmt(), behavior: "smooth" });
-  const right = () => trackRef.current?.scrollBy({ left: scrollAmt(), behavior: "smooth" });
+export default function Row({ title, items, loading, onSelectItem, action }: Props) {
+  const trackRef = useRef<HTMLUListElement>(null);
+
+  const scroll = (dir: 1 | -1) =>
+    trackRef.current?.scrollBy({
+      left: dir * Math.round(trackRef.current.clientWidth * 0.9),
+      behavior: scrollBehavior(),
+    });
 
   return (
-    <section className="content-section">
-      <h2 className="mb-6 text-xl font-semibold">{title}</h2>
+    <section className="mb-8 md:mb-10">
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <h2 className="text-xl font-semibold">{title}</h2>
+        {action}
+      </div>
 
       <div className="group relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-black to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-black to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+        <ArrowButton dir="left" onClick={() => scroll(-1)} />
+        <ArrowButton dir="right" onClick={() => scroll(1)} />
 
-        <ArrowButton dir="left" onClick={left} />
-        <ArrowButton dir="right" onClick={right} />
-
-        <div ref={trackRef} className="scrollbar-hide netflix-section-padding flex gap-3 overflow-x-auto">
+        <ul ref={trackRef} className="scrollbar-hide flex gap-3 overflow-x-auto py-1">
           {loading
-            ? Array.from({ length: 12 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="relative h-74 w-32 flex-shrink-0 overflow-hidden rounded-md md:h-74 md:w-84"
-                />
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <li key={i} aria-hidden className={`${CELL} shimmer aspect-[2/3] rounded-md`} />
               ))
             : items.map((it) => (
-                <div
-                  key={it.id}
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => onSelectItem(it)}
-                  className="group/item relative h-44 w-32 flex-shrink-0 cursor-pointer overflow-hidden rounded-md transition hover:scale-105 focus-visible:ring-2 md:h-84 md:w-54"
-                  style={{ backgroundColor: "#141414" }}
-                  title={it.title}
-                >
-                  <div
-                    className="absolute inset-0 bg-center transition-transform group-hover/item:scale-110"
-                    style={{
-                      backgroundImage: it.image ? `url(${it.image})` : "linear-gradient(180deg,#222,#111)",
-                      backgroundSize: "cover",
-                    }}
-                  />
-
-                  <div className="absolute inset-0 flex flex-col justify-end bg-black/70 p-2 text-white opacity-0 transition-opacity group-hover/item:opacity-100">
-                    <h3 className="truncate text-sm font-bold">{it.title}</h3>
-                    <p className="truncate text-xs opacity-80">{it.author}</p>
-                    <div className="mt-1 flex items-center justify-between text-xs">
-                      <span className="rounded bg-gray-400 px-1.5 py-0.5 text-black">⭐ {it.ratingAvg}</span>
-                      {it.year && <span className="opacity-70">{it.year}</span>}
-                    </div>
-                    {it.description && (
-                      <p className="mt-1 line-clamp-2 text-[11px] opacity-70">{it.description}</p>
-                    )}
-                  </div>
-                </div>
+                <li key={it.id} className={CELL}>
+                  <PosterCard item={it} onSelect={onSelectItem} />
+                </li>
               ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

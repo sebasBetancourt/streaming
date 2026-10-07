@@ -1,12 +1,16 @@
 import type { Page, TitleDto, TitleType } from "@/entities/titles";
 import { http } from "./client";
 
+export type TitleSort = "popular" | "rating" | "recent";
+
 export interface ListTitlesParams {
   skip?: number;
   limit?: number;
   type?: TitleType;
   categoryId?: string;
   search?: string;
+  /** Sin valor, el orden natural del backend (el del Home). */
+  sort?: TitleSort;
 }
 
 export interface CreateTitleInput {

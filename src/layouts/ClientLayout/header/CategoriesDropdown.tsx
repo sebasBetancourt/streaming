@@ -21,7 +21,7 @@ export default function CategoriesDropdown({ categories, navigate }: Props) {
             {categories.map((c) => (
               <button
                 key={c.id}
-                onClick={() => navigate("/categories")}
+                onClick={() => navigate(`/categories?category=${c.id}`)}
                 className="block rounded px-3 py-1 text-left text-sm text-gray-300 hover:bg-gray-800"
               >
                 {c.name}
