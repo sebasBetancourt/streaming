@@ -9,7 +9,7 @@ interface Props {
 
 export function HomeRows({ movies, series, animes }: Props) {
   return (
-    <div className="relative z-10 -mt-32 pb-20">
+    <div className="relative z-10 -mt-16 pb-20 md:-mt-24">
       <ContentRow id="Explore" title="Explorar" items={movies} />
       <ContentRow id="Ranking" title="Tendencia Ahora" items={series} />
       <ContentRow id="Popular" title="Popular en PelisFlix" items={animes} />
