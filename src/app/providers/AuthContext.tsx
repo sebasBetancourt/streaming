@@ -9,6 +9,8 @@ interface AuthContextValue {
   /** `true` mientras se valida con el backend la sesión guardada. */
   validating: boolean;
   login: (user: SessionUser, token: string) => void;
+  /** Actualiza datos visibles de la sesión (nombre, foto) sin cerrarla. */
+  updateUser: (patch: Partial<Pick<SessionUser, "name" | "avatarUrl">>) => void;
   logout: () => void;
 }
 
@@ -28,12 +30,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(u);
   }, []);
 
+  const updateUser = useCallback((patch: Partial<Pick<SessionUser, "name" | "avatarUrl">>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...patch };
+      storage.setUser(next);
+      return next;
+    });
+  }, []);
+
   // Valida una sola vez, al arrancar, la sesión guardada.
   useEffect(() => {
     if (!validating) return;
     let cancelled = false;
     verifySession()
-      .then((valid) => !valid && !cancelled && logout())
+      .then((fresh) => {
+        if (cancelled) return;
+        if (!fresh) return logout();
+        // Nombre y foto vienen de la BD: la sesión guardada pudo quedar desactualizada.
+        setUser(fresh);
+        storage.setUser(fresh);
+      })
       .catch(() => !cancelled && logout())
       .finally(() => !cancelled && setValidating(false));
     return () => {
@@ -47,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, logout);
   }, [logout]);
 
-  const value = useMemo(() => ({ user, validating, login, logout }), [user, validating, login, logout]);
+  const value = useMemo(() => ({ user, validating, login, updateUser, logout }), [user, validating, login, updateUser, logout]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

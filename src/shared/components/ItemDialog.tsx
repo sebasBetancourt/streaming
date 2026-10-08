@@ -6,6 +6,7 @@ import { mapTitle, type TitleEntity } from "@/entities/titles";
 import type { Review } from "@/entities/reviews";
 import { createReview, dislikeReview, getRanking, likeReview, listReviews } from "@/shared/api/reviews";
 import { getTitle } from "@/shared/api/titles";
+import Avatar from "./Avatar";
 import { useBodyScrollLock } from "@/shared/hooks/useScrollLock";
 import NetflixPlayerModal from "./NetflixPlayer";
 
@@ -347,7 +348,10 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
                     className="mt-5 flex w-full max-w-[300px] flex-col rounded-lg border border-neutral-700 bg-neutral-800 p-3 sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.5rem)] lg:w-[600px]"
                   >
                     <h2 className="text-lg font-semibold">{c.title}</h2>
-                    <span className="text-sm italic">{c.user.name}</span>
+                    <span className="flex items-center gap-2 text-sm italic">
+                      <Avatar src={c.user.avatarUrl} name={c.user.name} size={20} rounded="full" />
+                      {c.user.name}
+                    </span>
 
                     <div className="mt-1 flex w-full items-center justify-between">
                       <div className="flex">

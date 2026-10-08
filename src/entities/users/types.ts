@@ -6,6 +6,8 @@ export interface SessionUser {
   email: string;
   name: string;
   role: Role;
+  /** Ruta relativa a la API (`/api/v1/avatars/…`) o `null` si no hay foto. */
+  avatarUrl: string | null;
 }
 
 export interface UserPreferences {
@@ -19,7 +21,6 @@ export interface UserPreferences {
 export interface UserProfile extends SessionUser {
   phone: string | null;
   country: string | null;
-  avatarUrl: string | null;
   banned: boolean;
   preferences: UserPreferences;
   createdAt: string;

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Search, User, X } from "lucide-react";
+import { Menu, Search, X } from "lucide-react";
+import Avatar from "@/shared/components/Avatar";
 import type { TitleEntity } from "@/entities/titles";
 import ItemDialog from "@/shared/components/ItemDialog";
 import NetflixSearch from "@/shared/components/Search/Search";
@@ -34,10 +35,10 @@ export function Header() {
             <Search size={20} onClick={() => setShowSearch(true)} className="cursor-pointer text-white" />
 
             <div className="group relative">
-              <div className="flex h-8 w-8 cursor-pointer items-center justify-center rounded bg-blue-600">
-                <User size={20} />
-              </div>
-              <ProfileMenu role={user?.role} logout={logout} navigate={navigate} />
+              <Link to="/profile" aria-label="Mi cuenta" className="block rounded focus-visible:outline-2 focus-visible:outline-white">
+                <Avatar src={user?.avatarUrl} name={user?.name ?? "Usuario"} size={32} />
+              </Link>
+              <ProfileMenu user={user} logout={logout} navigate={navigate} />
             </div>
           </div>
         </div>
