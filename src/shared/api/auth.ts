@@ -21,8 +21,11 @@ export const register = (input: RegisterInput) =>
 export const login = (credentials: { email: string; password: string }) =>
   http.post<LoginResponse>("/auth/login", credentials).then((r) => r.data);
 
+/** Devuelve el usuario actual según la BD (nombre y foto al día) o `null` si la sesión ya no vale. */
 export const verifySession = () =>
-  http.get<{ valid: boolean }>("/auth/verify").then((r) => r.data.valid);
+  http
+    .get<{ valid: boolean; user: SessionUser | null }>("/auth/verify")
+    .then((r) => (r.data.valid ? r.data.user : null));
 
 /** Responde igual exista o no el correo. */
 export const forgotPassword = (email: string) =>

@@ -16,7 +16,7 @@ beforeEach(() => localStorage.clear());
 
 describe("cliente HTTP", () => {
   it("envía el token guardado como Bearer", async () => {
-    storage.setSession({ id: "1", email: "a@b.c", name: "A", role: "user" }, "tok123");
+    storage.setSession({ id: "1", email: "a@b.c", name: "A", role: "user", avatarUrl: null }, "tok123");
     let auth: unknown;
     await http.get("/x", {
       adapter: async (config) => {
@@ -39,7 +39,7 @@ describe("cliente HTTP", () => {
     await http.get("/x", { adapter: reply(401, { message: "Token inválido" }) }).catch(() => undefined);
     expect(onExpired).not.toHaveBeenCalled(); // login fallido: no hay sesión que cerrar
 
-    storage.setSession({ id: "1", email: "a@b.c", name: "A", role: "user" }, "tok");
+    storage.setSession({ id: "1", email: "a@b.c", name: "A", role: "user", avatarUrl: null }, "tok");
     await http.get("/x", { adapter: reply(401, { message: "Token inválido" }) }).catch(() => undefined);
     expect(onExpired).toHaveBeenCalledTimes(1);
     window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);

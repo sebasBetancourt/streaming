@@ -18,8 +18,12 @@ export const storage = {
       const raw = localStorage.getItem(USER_KEY);
       const u = raw ? (JSON.parse(raw) as Partial<SessionUser>) : null;
       // sesiones guardadas por la versión anterior (`_id`) ya no sirven: obligan a iniciar sesión de nuevo
-      return u && u.id && u.role ? (u as SessionUser) : null;
+      return u && u.id && u.role ? ({ ...u, avatarUrl: u.avatarUrl ?? null } as SessionUser) : null;
     }, null);
+  },
+  /** Actualiza solo el usuario guardado (nombre, foto…) sin tocar el token. */
+  setUser(user: SessionUser) {
+    safe(() => localStorage.setItem(USER_KEY, JSON.stringify(user)), undefined);
   },
   setSession(user: SessionUser, token: string) {
     safe(() => {
