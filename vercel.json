@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/:path*", "destination": "https://pelixflix-api.pelixflix-gateway.workers.dev/api/:path*" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
