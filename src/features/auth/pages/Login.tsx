@@ -11,9 +11,19 @@ import {
   authSecondaryButtonClass,
 } from "../components/AuthLayout";
 
-/** Estado de navegación con el que otras pantallas (p. ej. restablecer contraseña) dejan un aviso. */
+/**
+ * Estado de navegación con el que otras pantallas dejan un aviso (p. ej. restablecer contraseña)
+ * y la ruta a la que volver después de entrar (acciones que piden sesión).
+ */
 export interface LoginLocationState {
   notice?: string;
+  from?: string;
+}
+
+/** Solo rutas internas de la app (evita redirecciones a otros sitios, p. ej. "//evil.com"). */
+function safeReturnPath(from: string | undefined): string | undefined {
+  if (!from || !from.startsWith("/") || from.startsWith("//") || from.startsWith("/login")) return undefined;
+  return from;
 }
 
 export default function Login() {
@@ -24,6 +34,9 @@ export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [notice, setNotice] = useState(() => (location.state as LoginLocationState | null)?.notice ?? "");
+  // Se guarda antes de que el efecto de abajo limpie location.state
+  const returnTo = useRef(safeReturnPath((location.state as LoginLocationState | null)?.from));
+  const destinationFor = (role: string) => returnTo.current ?? (role === "admin" ? "/admin" : "/home");
   const [showRegister, setShowRegister] = useState(false);
 
   const [registerData, setRegisterData] = useState({
@@ -40,13 +53,8 @@ export default function Login() {
   const [closing, setClosing] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      if (user.role === "admin") {
-        navigate("/admin", { replace: true });
-      } else {
-        navigate("/home", { replace: true });
-      }
-    }
+    if (user) navigate(destinationFor(user.role), { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
   // El aviso ya está en el estado local; se quita del historial para que no reaparezca al recargar.
@@ -97,7 +105,7 @@ export default function Login() {
     try {
       const response = await login(formData);
       authLogin(response.user, response.token);
-      navigate(response.user.role === "admin" ? "/admin" : "/home", { replace: true });
+      navigate(destinationFor(response.user.role), { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al iniciar sesión. Verifica tus credenciales.");
     }
@@ -201,6 +209,13 @@ export default function Login() {
         <button type="button" className={authSecondaryButtonClass} onClick={openRegister}>
           Regístrate
         </button>
+
+        <Link
+          to="/home"
+          className="mt-4 block text-center text-sm opacity-80 hover:underline"
+        >
+          Seguir explorando sin cuenta
+        </Link>
 
         <div className="mt-6 text-xs opacity-70 leading-relaxed">
           Autenticación basada en tokens (JWT) con expiración y rotación automática.

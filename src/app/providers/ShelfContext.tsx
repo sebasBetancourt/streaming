@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { addToShelf, getShelfIds, removeFromShelf, type ShelfName } from "@/shared/api/favorites";
 import { useAuth } from "./AuthContext";
+import { useRequireAuth } from "./useRequireAuth";
 
 type Shelves = Record<ShelfName, Set<string>>;
 const empty = (): Shelves => ({ favorites: new Set(), watchlist: new Set() });
@@ -70,14 +71,25 @@ export function useShelf(): ShelfContextValue {
   return ctx;
 }
 
-/** Estado y acciones de un título en "Mi Lista" y "Favoritos". */
+/**
+ * Estado y acciones de un título en "Mi Lista" y "Favoritos".
+ * Sin sesión, las acciones llevan a /login (y se vuelve aquí después de entrar).
+ * Solo se usa dentro del router (en componentes), no en el provider.
+ */
 export function useShelfItem(titleId: string | undefined) {
   const ctx = useShelf();
+  const requireAuth = useRequireAuth();
   const id = titleId ?? "";
   return {
     inList: !!id && ctx.has("watchlist", id),
     isFav: !!id && ctx.has("favorites", id),
-    toggleList: () => (id ? ctx.toggle("watchlist", id) : Promise.resolve(false)),
-    toggleFav: () => (id ? ctx.toggle("favorites", id) : Promise.resolve(false)),
+    toggleList: () =>
+      requireAuth("Inicia sesión o regístrate para guardar títulos en tu lista.", () =>
+        id ? ctx.toggle("watchlist", id) : Promise.resolve(false),
+      ) ?? Promise.resolve(false),
+    toggleFav: () =>
+      requireAuth("Inicia sesión o regístrate para guardar tus favoritos.", () =>
+        id ? ctx.toggle("favorites", id) : Promise.resolve(false),
+      ) ?? Promise.resolve(false),
   };
 }

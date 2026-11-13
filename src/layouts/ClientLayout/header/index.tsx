@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, Search, X } from "lucide-react";
 import Avatar from "@/shared/components/Avatar";
 import type { TitleEntity } from "@/entities/titles";
@@ -13,6 +13,7 @@ import { useHeader } from "./useHeader";
 export function Header() {
   const { isScrolled, isMobileMenuOpen, setIsMobileMenuOpen, searchRef, showSearch, setShowSearch, navigate, user, logout, categories } =
     useHeader();
+  const location = useLocation();
   const [selectedItem, setSelectedItem] = useState<TitleEntity | null>(null);
 
   return (
@@ -34,12 +35,23 @@ export function Header() {
           <div className="flex items-center space-x-4" ref={searchRef}>
             <Search size={20} onClick={() => setShowSearch(true)} className="cursor-pointer text-white" />
 
-            <div className="group relative">
-              <Link to="/profile" aria-label="Mi cuenta" className="block rounded focus-visible:outline-2 focus-visible:outline-white">
-                <Avatar src={user?.avatarUrl} name={user?.name ?? "Usuario"} size={32} />
+            {user ? (
+              <div className="group relative">
+                <Link to="/profile" aria-label="Mi cuenta" className="block rounded focus-visible:outline-2 focus-visible:outline-white">
+                  <Avatar src={user.avatarUrl} name={user.name} size={32} />
+                </Link>
+                <ProfileMenu user={user} logout={logout} navigate={navigate} />
+              </div>
+            ) : (
+              // Visitante: el catálogo es público; la cuenta pide iniciar sesión
+              <Link
+                to="/login"
+                state={{ from: location.pathname + location.search }}
+                className="whitespace-nowrap rounded bg-red-600 px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-red-700"
+              >
+                Iniciar sesión
               </Link>
-              <ProfileMenu user={user} logout={logout} navigate={navigate} />
-            </div>
+            )}
           </div>
         </div>
 

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, Heart, HeartOff, Play, Plus, Star, ThumbsDown, ThumbsUp, Users, X } from "lucide-react";
+import { useAuth } from "@/app/providers/AuthContext";
 import { useShelfItem } from "@/app/providers/ShelfContext";
+import { useRequireAuth } from "@/app/providers/useRequireAuth";
 import { mapTitle, type TitleEntity } from "@/entities/titles";
 import type { Review } from "@/entities/reviews";
 import { createReview, dislikeReview, getRanking, likeReview, listReviews } from "@/shared/api/reviews";
@@ -51,6 +53,8 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
   const boxRef = useRef<HTMLDivElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const { inList, isFav, toggleList, toggleFav } = useShelfItem(fullItem?.id);
+  const { user } = useAuth();
+  const requireAuth = useRequireAuth();
 
   const itemId = item?.id;
 
@@ -106,6 +110,10 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
   };
 
   const react = async (reviewId: string, kind: "like" | "dislike") => {
+    if (!user) {
+      requireAuth("Inicia sesión o regístrate para reaccionar a las reseñas.", () => undefined);
+      return;
+    }
     try {
       const updated = await (kind === "like" ? likeReview(reviewId) : dislikeReview(reviewId));
       setReviews((prev) =>
@@ -312,33 +320,42 @@ export default function ItemDialog({ open, onClose, item, suggestions = [] }: Pr
               <div className="mb-3 flex items-center space-x-2">
                 <h3 className="text-lg font-semibold">Comentarios</h3>
                 <Users className="mr-8 h-5 w-5" />
-                <StarRating value={starRating} onChange={setStarRating} />
+                {user && <StarRating value={starRating} onChange={setStarRating} />}
               </div>
 
-              <div className="flex flex-col gap-3">
-                <input
-                  type="text"
-                  placeholder="Escribe el título"
-                  value={reviewTitle}
-                  maxLength={100}
-                  onChange={(e) => setReviewTitle(e.target.value)}
-                  className="mt-4 w-80 max-w-full rounded border border-neutral-700 bg-neutral-800 p-2"
-                />
-                <textarea
-                  placeholder="Escribe tu comentario..."
-                  value={comment}
-                  maxLength={500}
-                  onChange={(e) => setComment(e.target.value)}
-                  className="mb-1 w-80 max-w-full rounded border border-neutral-700 bg-neutral-800 p-2"
-                />
-                {formError && <p className="text-sm text-red-400">{formError}</p>}
+              {!user ? (
                 <button
-                  onClick={() => void handleAddComment()}
-                  className="mt-1 w-80 max-w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                  onClick={() => requireAuth("Inicia sesión o regístrate para escribir una reseña.", () => undefined)}
+                  className="mt-1 w-80 max-w-full rounded-lg border border-white/20 bg-white/10 px-4 py-2 text-sm text-white transition hover:bg-white/20"
                 >
-                  Enviar
+                  Inicia sesión para escribir una reseña
                 </button>
-              </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  <input
+                    type="text"
+                    placeholder="Escribe el título"
+                    value={reviewTitle}
+                    maxLength={100}
+                    onChange={(e) => setReviewTitle(e.target.value)}
+                    className="mt-4 w-80 max-w-full rounded border border-neutral-700 bg-neutral-800 p-2"
+                  />
+                  <textarea
+                    placeholder="Escribe tu comentario..."
+                    value={comment}
+                    maxLength={500}
+                    onChange={(e) => setComment(e.target.value)}
+                    className="mb-1 w-80 max-w-full rounded border border-neutral-700 bg-neutral-800 p-2"
+                  />
+                  {formError && <p className="text-sm text-red-400">{formError}</p>}
+                  <button
+                    onClick={() => void handleAddComment()}
+                    className="mt-1 w-80 max-w-full rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700"
+                  >
+                    Enviar
+                  </button>
+                </div>
+              )}
 
               <div className="mt-2 flex w-full flex-wrap gap-4">
                 {reviews.length === 0 && <p className="mt-4 text-sm opacity-60">Aún no hay comentarios. ¡Sé el primero!</p>}

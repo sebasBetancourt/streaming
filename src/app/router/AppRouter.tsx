@@ -21,16 +21,14 @@ export default function AppRouter() {
       <Route path="/forgot-password" element={user ? <Navigate to="/" replace /> : <ForgotPassword />} />
       <Route path="/reset-password" element={user ? <Navigate to="/" replace /> : <ResetPassword />} />
 
-      <Route
-        path="/"
-        element={<Navigate to={!user ? "/login" : user.role === "admin" ? "/admin" : "/home"} replace />}
-      />
+      {/* Inicio: el catálogo es público; el admin logueado va a su panel */}
+      <Route path="/" element={<Navigate to={user?.role === "admin" ? "/admin" : "/home"} replace />} />
 
-      {/* Zona de cliente: la ven usuarios y admins */}
-      <Route element={<PrivateRoute roles={["user", "admin"]} />}>
-        <Route element={<ClientLayout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/categories" element={<CategoriesPage />} />
+      {/* Zona de cliente: el catálogo se explora sin sesión; lo personal pide login */}
+      <Route element={<ClientLayout />}>
+        <Route path="/home" element={<Home />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route element={<PrivateRoute roles={["user", "admin"]} />}>
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/list" element={<MyListPage />} />
           <Route path="/profile" element={<ProfilePage />} />
@@ -42,7 +40,7 @@ export default function AppRouter() {
         <Route path="/admin" element={<Admin />} />
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/home" replace />} />
     </Routes>
   );
 }
